@@ -27,13 +27,14 @@ class ApplyResult:
 
 
 # Make the pattern resilient to both LF and CRLF line endings and to minor spacing.
+# Anchor markers to line starts and use MULTILINE to avoid accidental mid-line matches.
 _BLOCK_PATTERN = re.compile(
-    r"###\s*FILE:\s*(?P<file>.+?)\s*\r?\n"
-    r"###\s*ACTION:\s*(?P<action>replace|create)\s*\r?\n"
-    r"<<<CODE_START>>>\s*\r?\n"
+    r"^\s*###\s*FILE:\s*(?P<file>.+?)\s*\r?\n"
+    r"^\s*###\s*ACTION:\s*(?P<action>replace|create)\s*\r?\n"
+    r"^\s*<<<CODE_START>>>\s*\r?\n"
     r"(?P<content>.*?)"
-    r"\r?\n?<<<CODE_END>>>",
-    re.DOTALL | re.IGNORECASE,
+    r"\r?\n?^\s*<<<CODE_END>>>",
+    re.DOTALL | re.IGNORECASE | re.MULTILINE,
 )
 
 
@@ -51,6 +52,7 @@ def parse_code_blocks(raw_text: str) -> list[CodeBlock]:
         blocks.append(CodeBlock(file_path=file_path, action=action, content=content))
 
     return blocks
+
 
 def _is_safe_path(project_root: str, relative_path: str) -> bool:
     root = Path(project_root).resolve()
@@ -170,12 +172,12 @@ def apply_all_blocks(project_root: str, raw_text: str) -> list[ApplyResult]:
 
 if __name__ == "__main__":
     sample = """
-### FILE: test_output/sample.py
-### ACTION: create
-<<<CODE_START>>>
-print("hello from applied code block")
-<<<CODE_END>>>
-"""
+ ### FILE: test_output/sample.py
+ ### ACTION: create
+ <<<CODE_START>>>
+ print("hello from applied code block")
+ <<<CODE_END>>>
+ """
     results = apply_all_blocks(".", sample)
     for r in results:
         print(r.message)
