@@ -1,8 +1,8 @@
 ﻿"""
 caretaker_gui.py
 
-PyQt6 Single-Window GUI for the Medical ERP v2 Autonomous Caretaker.
-Connects directly to caretaker_orchestrator.py FastAPI endpoints.
+Upgraded PyQt6 Single-Window GUI for Medical ERP v2 Autonomous Caretaker.
+Includes Clear/Reset buttons, input state auto-reset, and button disabling safety.
 """
 import sys
 import requests
@@ -30,6 +30,13 @@ class CaretakerGUI(QMainWindow):
         url_layout.addWidget(QLabel("Orchestrator URL:"))
         self.url_input = QLineEdit("http://127.0.0.1:8000")
         url_layout.addWidget(self.url_input)
+        
+        # Clear All Button in Top Bar
+        self.btn_clear = QPushButton("Clear All / New Patch")
+        self.btn_clear.setStyleSheet("background-color: #f44336; color: white; font-weight: bold; padding: 4px 10px;")
+        self.btn_clear.clicked.connect(self.clear_all)
+        url_layout.addWidget(self.btn_clear)
+
         main_layout.addLayout(url_layout)
 
         # Splitter for Text Areas
@@ -41,6 +48,7 @@ class CaretakerGUI(QMainWindow):
         left_layout.addWidget(QLabel("<b>1. Paste Code Blocks / Patch Content:</b>"))
         self.patch_input = QTextEdit()
         self.patch_input.setPlaceholderText("Paste markdown code blocks or unified diff patches here...")
+        self.patch_input.textChanged.connect(self.on_text_changed)
         left_layout.addWidget(self.patch_input)
         splitter.addWidget(left_widget)
 
@@ -57,16 +65,35 @@ class CaretakerGUI(QMainWindow):
 
         # Action Buttons
         btn_layout = QHBoxLayout()
-        self.btn_preview = QPushButton("Preview Patch Diff")
+        
+        # Highlighted Preview Button
+        self.btn_preview = QPushButton("🔍 Preview Patch Diff")
+        self.btn_preview.setStyleSheet("background-color: #ff9800; color: white; font-weight: bold; padding: 8px;")
         self.btn_preview.clicked.connect(self.preview_diff)
         btn_layout.addWidget(self.btn_preview)
 
-        self.btn_apply = QPushButton("Apply & Run Pytest Sandbox")
-        self.btn_apply.setStyleSheet("background-color: #2b78e4; color: white; font-weight: bold;")
+        # Apply Button (Active state styled)
+        self.btn_apply = QPushButton("🚀 Apply & Run Pytest Sandbox")
+        self.btn_apply.setStyleSheet("background-color: #2b78e4; color: white; font-weight: bold; padding: 8px;")
         self.btn_apply.clicked.connect(self.apply_and_run)
         btn_layout.addWidget(self.btn_apply)
 
         main_layout.addLayout(btn_layout)
+
+    def on_text_changed(self):
+        # Enable Apply & Preview buttons when text is modified or new text is pasted
+        if self.patch_input.toPlainText().strip():
+            self.btn_apply.setEnabled(True)
+            self.btn_apply.setStyleSheet("background-color: #2b78e4; color: white; font-weight: bold; padding: 8px;")
+            self.btn_preview.setEnabled(True)
+        else:
+            self.btn_apply.setEnabled(False)
+
+    def clear_all(self):
+        self.patch_input.clear()
+        self.log_output.clear()
+        self.btn_apply.setEnabled(True)
+        self.btn_apply.setStyleSheet("background-color: #2b78e4; color: white; font-weight: bold; padding: 8px;")
 
     def preview_diff(self):
         text = self.patch_input.toPlainText().strip()
@@ -113,6 +140,10 @@ class CaretakerGUI(QMainWindow):
                     self.log_output.append(f"Exit Code: {pytest_res.get('returncode')}")
                     self.log_output.append(pytest_res.get("stdout") or "")
                     self.log_output.append(pytest_res.get("stderr") or "")
+
+                # Deactivate / Disable Apply Button after successful execution
+                self.btn_apply.setEnabled(False)
+                self.btn_apply.setStyleSheet("background-color: #cccccc; color: #666666; font-weight: bold; padding: 8px;")
             else:
                 self.log_output.setText(f"Error ({resp.status_code}): {resp.text}")
         except Exception as e:
