@@ -79,7 +79,7 @@ def evaluate_inventory_allocation(input_data: dict) -> dict:
                     WarehouseAnalysis(
                         wh_id=wh.wh_id,
                         doi=None,
-                        reorder_point=rop,
+                        reorder_point=int(rop),
                         status="STOCK_ANOMALY",
                         action_recommended="INVESTIGATE",
                         source_wh=None,
@@ -91,7 +91,7 @@ def evaluate_inventory_allocation(input_data: dict) -> dict:
                     WarehouseAnalysis(
                         wh_id=wh.wh_id,
                         doi=None,
-                        reorder_point=rop,
+                        reorder_point=int(rop),
                         status="OK",
                         action_recommended=None,
                         source_wh=None,
@@ -137,7 +137,7 @@ def evaluate_inventory_allocation(input_data: dict) -> dict:
                         WarehouseAnalysis(
                             wh_id=wh.wh_id,
                             doi=doi,
-                            reorder_point=rop,
+                            reorder_point=int(rop),
                             status="STOCKOUT_RISK",
                             action_recommended="TRANSFER",
                             source_wh=source_id,
@@ -151,7 +151,7 @@ def evaluate_inventory_allocation(input_data: dict) -> dict:
                 WarehouseAnalysis(
                     wh_id=wh.wh_id,
                     doi=doi,
-                    reorder_point=rop,
+                    reorder_point=int(rop),
                     status="STOCKOUT_RISK",
                     action_recommended="PURCHASE_ORDER",
                     source_wh=None,
@@ -163,7 +163,7 @@ def evaluate_inventory_allocation(input_data: dict) -> dict:
                 WarehouseAnalysis(
                     wh_id=wh.wh_id,
                     doi=doi,
-                    reorder_point=rop,
+                    reorder_point=int(rop),
                     status="OK",
                     action_recommended=None,
                     source_wh=None,
