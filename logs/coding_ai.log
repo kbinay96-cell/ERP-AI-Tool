@@ -1,0 +1,616 @@
+2026-08-08 17:44:18,978 | INFO | ui.main_window | Project scan finished: added=0 updated=0 removed=0 total=174
+2026-08-08 17:50:32,468 | INFO | ui.main_window | Project scan finished: added=0 updated=0 removed=0 total=174
+2026-08-08 19:14:03,728 | INFO | ui.main_window | Project scan finished: added=1 updated=1 removed=173 total=2
+2026-08-08 19:14:30,382 | INFO | ui.main_window | Project scan finished: added=173 updated=1 removed=1 total=174
+2026-08-08 19:14:50,285 | INFO | ui.main_window | Project scan finished: added=0 updated=0 removed=0 total=174
+2026-08-08 20:58:56,699 | INFO | ui.main_window | Project scan finished: added=0 updated=0 removed=0 total=174
+2026-08-08 20:59:05,273 | WARNING | LiteLLM | register_model: model=aa86cc25821725412ee33f087259a3b8330c83b9893dcb3f3133c386481e27c3 not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-08 20:59:05,306 | WARNING | LiteLLM | register_model: model=7c89aed5d4cc1cd7d9bd27560d611a8b4470dcc8d2dc1e4c0b1ea817472f624b not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-08 20:59:05,351 | WARNING | LiteLLM | register_model: model=openrouter/openai/gpt-oss-20b:free not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-08 20:59:05,457 | INFO | LiteLLM Router | Routing strategy: simple-shuffle
+2026-08-08 20:59:05,486 | INFO | llm_router | LLM Router initialized: Groq (primary) -> OpenRouter (fallback).
+2026-08-08 20:59:05,670 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-08 20:59:07,023 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-08 20:59:07,061 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-08 21:21:57,482 | INFO | ui.main_window | Project scan finished: added=0 updated=0 removed=0 total=174
+2026-08-08 21:22:28,800 | WARNING | LiteLLM | register_model: model=aa86cc25821725412ee33f087259a3b8330c83b9893dcb3f3133c386481e27c3 not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-08 21:22:28,805 | WARNING | LiteLLM | register_model: model=7c89aed5d4cc1cd7d9bd27560d611a8b4470dcc8d2dc1e4c0b1ea817472f624b not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-08 21:22:28,812 | WARNING | LiteLLM | register_model: model=openrouter/openai/gpt-oss-20b:free not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-08 21:22:28,834 | INFO | LiteLLM Router | Routing strategy: simple-shuffle
+2026-08-08 21:22:28,837 | INFO | llm_router | LLM Router initialized: Groq (primary) -> OpenRouter (fallback).
+2026-08-08 21:22:28,854 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-08 21:22:30,501 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-08 21:22:30,508 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-08 21:25:25,031 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-08 21:25:26,297 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-08 21:25:26,300 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-08 21:30:27,843 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-08 21:30:29,227 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-08 21:30:29,229 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-08 21:33:53,789 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-08 21:33:54,905 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-08 21:33:54,908 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-08 21:34:34,113 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-08 21:34:35,141 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-08 21:34:35,144 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-08 21:35:28,891 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-08 21:35:30,203 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-08 21:35:30,205 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-08 21:36:28,597 | INFO | ui.main_window | Project scan finished: added=12 updated=1 removed=172 total=14
+2026-08-08 21:36:48,755 | WARNING | LiteLLM | register_model: model=aa86cc25821725412ee33f087259a3b8330c83b9893dcb3f3133c386481e27c3 not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-08 21:36:48,760 | WARNING | LiteLLM | register_model: model=7c89aed5d4cc1cd7d9bd27560d611a8b4470dcc8d2dc1e4c0b1ea817472f624b not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-08 21:36:48,768 | WARNING | LiteLLM | register_model: model=openrouter/openai/gpt-oss-20b:free not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-08 21:36:48,790 | INFO | LiteLLM Router | Routing strategy: simple-shuffle
+2026-08-08 21:36:48,792 | INFO | llm_router | LLM Router initialized: Groq (primary) -> OpenRouter (fallback).
+2026-08-08 21:36:48,810 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-08 21:36:49,936 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-08 21:36:49,945 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-08 21:38:53,913 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-08 21:38:54,725 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-08 21:38:54,726 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-08 21:40:12,040 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-08 21:40:12,980 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-08 21:40:12,982 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-08 21:42:01,541 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-08 21:42:02,709 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-08 21:42:02,712 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-08 21:43:48,448 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-08 21:43:49,651 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-08 21:43:49,653 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-08 21:46:13,903 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-08 21:46:15,123 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-08 21:46:15,125 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-08 21:48:57,278 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-08 21:48:58,116 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-08 21:48:58,116 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-08 21:50:15,365 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-08 21:50:16,118 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-08 21:50:16,119 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-08 21:51:34,757 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-08 21:51:35,700 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-08 21:51:35,702 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-08 21:52:14,092 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-08 21:52:15,105 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-08 21:52:15,108 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-08 22:06:13,045 | WARNING | LiteLLM | register_model: model=aa86cc25821725412ee33f087259a3b8330c83b9893dcb3f3133c386481e27c3 not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-08 22:06:13,052 | WARNING | LiteLLM | register_model: model=7c89aed5d4cc1cd7d9bd27560d611a8b4470dcc8d2dc1e4c0b1ea817472f624b not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-08 22:06:13,059 | WARNING | LiteLLM | register_model: model=openrouter/openai/gpt-oss-20b:free not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-08 22:06:13,082 | INFO | LiteLLM Router | Routing strategy: simple-shuffle
+2026-08-08 22:06:13,084 | INFO | llm_router | LLM Router initialized: Groq (primary) -> OpenRouter (fallback).
+2026-08-08 22:06:13,101 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-08 22:06:14,044 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-08 22:06:14,051 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-08 22:06:39,896 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-08 22:06:40,942 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-08 22:06:40,944 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-08 22:14:59,179 | WARNING | LiteLLM | register_model: model=aa86cc25821725412ee33f087259a3b8330c83b9893dcb3f3133c386481e27c3 not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-08 22:14:59,183 | WARNING | LiteLLM | register_model: model=7c89aed5d4cc1cd7d9bd27560d611a8b4470dcc8d2dc1e4c0b1ea817472f624b not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-08 22:14:59,190 | WARNING | LiteLLM | register_model: model=openrouter/openai/gpt-oss-20b:free not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-08 22:14:59,212 | INFO | LiteLLM Router | Routing strategy: simple-shuffle
+2026-08-08 22:14:59,215 | INFO | llm_router | LLM Router initialized: Groq (primary) -> OpenRouter (fallback).
+2026-08-08 22:14:59,232 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-08 22:14:59,902 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-08 22:14:59,910 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-09 08:14:08,482 | INFO | ui.main_window | Project scan finished: added=172 updated=1 removed=12 total=174
+2026-08-09 08:14:15,541 | WARNING | LiteLLM | register_model: model=aa86cc25821725412ee33f087259a3b8330c83b9893dcb3f3133c386481e27c3 not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 08:14:15,575 | WARNING | LiteLLM | register_model: model=7c89aed5d4cc1cd7d9bd27560d611a8b4470dcc8d2dc1e4c0b1ea817472f624b not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 08:14:15,597 | WARNING | LiteLLM | register_model: model=openrouter/openai/gpt-oss-20b:free not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 08:14:15,672 | INFO | LiteLLM Router | Routing strategy: simple-shuffle
+2026-08-09 08:14:15,713 | INFO | llm_router | LLM Router initialized: Groq (primary) -> OpenRouter (fallback).
+2026-08-09 08:14:15,838 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-09 08:14:19,328 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-09 08:14:19,366 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-09 08:39:26,480 | INFO | ui.main_window | Project scan finished: added=0 updated=0 removed=0 total=174
+2026-08-09 08:39:34,695 | WARNING | LiteLLM | register_model: model=aa86cc25821725412ee33f087259a3b8330c83b9893dcb3f3133c386481e27c3 not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 08:39:34,699 | WARNING | LiteLLM | register_model: model=7c89aed5d4cc1cd7d9bd27560d611a8b4470dcc8d2dc1e4c0b1ea817472f624b not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 08:39:34,705 | WARNING | LiteLLM | register_model: model=openrouter/openai/gpt-oss-20b:free not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 08:39:34,727 | INFO | LiteLLM Router | Routing strategy: simple-shuffle
+2026-08-09 08:39:34,730 | INFO | llm_router | LLM Router initialized: Groq (primary) -> OpenRouter (fallback).
+2026-08-09 08:39:34,747 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-09 08:39:37,784 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-09 08:39:37,792 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-09 08:50:03,205 | INFO | ui.main_window | Project scan finished: added=0 updated=0 removed=0 total=174
+2026-08-09 08:50:16,171 | WARNING | LiteLLM | register_model: model=aa86cc25821725412ee33f087259a3b8330c83b9893dcb3f3133c386481e27c3 not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 08:50:16,175 | WARNING | LiteLLM | register_model: model=7c89aed5d4cc1cd7d9bd27560d611a8b4470dcc8d2dc1e4c0b1ea817472f624b not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 08:50:16,181 | WARNING | LiteLLM | register_model: model=openrouter/openai/gpt-oss-20b:free not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 08:50:16,206 | INFO | LiteLLM Router | Routing strategy: simple-shuffle
+2026-08-09 08:50:16,208 | INFO | llm_router | LLM Router initialized: Groq (primary) -> OpenRouter (fallback).
+2026-08-09 08:50:16,226 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-09 08:50:17,221 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-09 08:50:17,229 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-09 14:24:55,731 | ERROR | ui.query_worker | QueryWorker: query failed for query='hello kaise ho'
+Traceback (most recent call last):
+  File "C:\Users\Medical\Desktop\ERP-AI-Tool\ui\query_worker.py", line 258, in run
+    system_prompt = _build_system_prompt(memory.project_root_path)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'MemoryIndex' object has no attribute 'project_root_path'
+2026-08-09 14:25:26,436 | INFO | ui.main_window | Project scan finished: added=0 updated=0 removed=0 total=174
+2026-08-09 14:25:37,515 | ERROR | ui.query_worker | QueryWorker: query failed for query='tu kaun ho'
+Traceback (most recent call last):
+  File "C:\Users\Medical\Desktop\ERP-AI-Tool\ui\query_worker.py", line 258, in run
+    system_prompt = _build_system_prompt(memory.project_root_path)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'MemoryIndex' object has no attribute 'project_root_path'
+2026-08-09 14:35:12,927 | WARNING | LiteLLM | register_model: model=aa86cc25821725412ee33f087259a3b8330c83b9893dcb3f3133c386481e27c3 not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 14:35:12,935 | WARNING | LiteLLM | register_model: model=7c89aed5d4cc1cd7d9bd27560d611a8b4470dcc8d2dc1e4c0b1ea817472f624b not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 14:35:12,944 | WARNING | LiteLLM | register_model: model=openrouter/openai/gpt-oss-20b:free not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 14:35:12,977 | INFO | LiteLLM Router | Routing strategy: simple-shuffle
+2026-08-09 14:35:12,979 | INFO | llm_router | LLM Router initialized: Groq (primary) -> OpenRouter (fallback).
+2026-08-09 14:35:13,021 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-09 14:35:14,175 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-09 14:35:14,182 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-09 14:45:51,651 | WARNING | LiteLLM | register_model: model=aa86cc25821725412ee33f087259a3b8330c83b9893dcb3f3133c386481e27c3 not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 14:45:51,654 | WARNING | LiteLLM | register_model: model=7c89aed5d4cc1cd7d9bd27560d611a8b4470dcc8d2dc1e4c0b1ea817472f624b not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 14:45:51,661 | WARNING | LiteLLM | register_model: model=openrouter/openai/gpt-oss-20b:free not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 14:45:51,682 | INFO | LiteLLM Router | Routing strategy: simple-shuffle
+2026-08-09 14:45:51,684 | INFO | llm_router | LLM Router initialized: Groq (primary) -> OpenRouter (fallback).
+2026-08-09 14:45:51,701 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-09 14:45:59,791 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-09 14:45:59,799 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-09 14:46:58,867 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-09 14:47:04,942 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-09 14:47:04,945 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-09 15:31:49,134 | INFO | ui.main_window | Project scan finished: added=16 updated=1 removed=172 total=18
+2026-08-09 15:32:21,745 | WARNING | LiteLLM | register_model: model=aa86cc25821725412ee33f087259a3b8330c83b9893dcb3f3133c386481e27c3 not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 15:32:21,749 | WARNING | LiteLLM | register_model: model=7c89aed5d4cc1cd7d9bd27560d611a8b4470dcc8d2dc1e4c0b1ea817472f624b not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 15:32:21,756 | WARNING | LiteLLM | register_model: model=openrouter/openai/gpt-oss-20b:free not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 15:32:21,778 | INFO | LiteLLM Router | Routing strategy: simple-shuffle
+2026-08-09 15:32:21,780 | INFO | llm_router | LLM Router initialized: Groq (primary) -> OpenRouter (fallback).
+2026-08-09 15:32:21,797 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-09 15:32:28,027 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-09 15:32:28,032 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-09 16:15:53,374 | WARNING | LiteLLM | register_model: model=aa86cc25821725412ee33f087259a3b8330c83b9893dcb3f3133c386481e27c3 not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 16:15:53,378 | WARNING | LiteLLM | register_model: model=7c89aed5d4cc1cd7d9bd27560d611a8b4470dcc8d2dc1e4c0b1ea817472f624b not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 16:15:53,384 | WARNING | LiteLLM | register_model: model=openrouter/openai/gpt-oss-20b:free not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 16:15:53,406 | INFO | LiteLLM Router | Routing strategy: simple-shuffle
+2026-08-09 16:15:53,409 | INFO | llm_router | LLM Router initialized: Groq (primary) -> OpenRouter (fallback).
+2026-08-09 16:15:53,426 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-09 16:15:55,222 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-09 16:15:55,230 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-09 16:25:30,729 | WARNING | LiteLLM | register_model: model=aa86cc25821725412ee33f087259a3b8330c83b9893dcb3f3133c386481e27c3 not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 16:25:30,734 | WARNING | LiteLLM | register_model: model=7c89aed5d4cc1cd7d9bd27560d611a8b4470dcc8d2dc1e4c0b1ea817472f624b not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 16:25:30,742 | WARNING | LiteLLM | register_model: model=openrouter/openai/gpt-oss-20b:free not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 16:25:30,763 | INFO | LiteLLM Router | Routing strategy: simple-shuffle
+2026-08-09 16:25:30,766 | INFO | llm_router | LLM Router initialized: Groq (primary) -> OpenRouter (fallback).
+2026-08-09 16:25:30,783 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-09 16:25:31,779 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-09 16:25:31,784 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-09 16:34:57,371 | WARNING | LiteLLM | register_model: model=aa86cc25821725412ee33f087259a3b8330c83b9893dcb3f3133c386481e27c3 not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 16:34:57,377 | WARNING | LiteLLM | register_model: model=7c89aed5d4cc1cd7d9bd27560d611a8b4470dcc8d2dc1e4c0b1ea817472f624b not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 16:34:57,384 | WARNING | LiteLLM | register_model: model=openrouter/openai/gpt-oss-20b:free not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 16:34:57,405 | INFO | LiteLLM Router | Routing strategy: simple-shuffle
+2026-08-09 16:34:57,408 | INFO | llm_router | LLM Router initialized: Groq (primary) -> OpenRouter (fallback).
+2026-08-09 16:34:57,424 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-09 16:34:58,186 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-09 16:34:58,188 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-09 16:41:18,493 | WARNING | LiteLLM | register_model: model=aa86cc25821725412ee33f087259a3b8330c83b9893dcb3f3133c386481e27c3 not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 16:41:18,498 | WARNING | LiteLLM | register_model: model=7c89aed5d4cc1cd7d9bd27560d611a8b4470dcc8d2dc1e4c0b1ea817472f624b not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 16:41:18,506 | WARNING | LiteLLM | register_model: model=openrouter/openai/gpt-oss-20b:free not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 16:41:18,527 | INFO | LiteLLM Router | Routing strategy: simple-shuffle
+2026-08-09 16:41:18,530 | INFO | llm_router | LLM Router initialized: Groq (primary) -> OpenRouter (fallback).
+2026-08-09 16:41:18,547 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-09 16:41:19,441 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-09 16:41:19,445 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-09 16:54:12,446 | WARNING | LiteLLM | register_model: model=aa86cc25821725412ee33f087259a3b8330c83b9893dcb3f3133c386481e27c3 not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 16:54:12,452 | WARNING | LiteLLM | register_model: model=7c89aed5d4cc1cd7d9bd27560d611a8b4470dcc8d2dc1e4c0b1ea817472f624b not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 16:54:12,461 | WARNING | LiteLLM | register_model: model=openrouter/openai/gpt-oss-20b:free not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 16:54:12,482 | INFO | LiteLLM Router | Routing strategy: simple-shuffle
+2026-08-09 16:54:12,484 | INFO | llm_router | LLM Router initialized: Groq (primary) -> OpenRouter (fallback).
+2026-08-09 16:54:12,501 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-09 16:54:13,090 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-09 16:54:13,094 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-09 16:54:35,034 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-09 16:55:17,776 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[31m Exception litellm.Timeout: Timeout Error: GroqException - litellm.Timeout: Connection timed out after 30.0 seconds.[0m
+2026-08-09 16:55:18,600 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-09 16:55:19,013 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-09 16:55:19,016 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-09 16:59:06,731 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-09 16:59:07,156 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-09 16:59:07,158 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-09 17:00:24,108 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-09 17:00:24,483 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-09 17:00:24,517 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-09 17:01:22,502 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-09 17:01:23,038 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-09 17:01:23,040 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-09 17:07:27,583 | WARNING | LiteLLM | register_model: model=aa86cc25821725412ee33f087259a3b8330c83b9893dcb3f3133c386481e27c3 not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 17:07:27,589 | WARNING | LiteLLM | register_model: model=7c89aed5d4cc1cd7d9bd27560d611a8b4470dcc8d2dc1e4c0b1ea817472f624b not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 17:07:27,599 | WARNING | LiteLLM | register_model: model=openrouter/openai/gpt-oss-20b:free not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 17:07:27,622 | INFO | LiteLLM Router | Routing strategy: simple-shuffle
+2026-08-09 17:07:27,624 | INFO | llm_router | LLM Router initialized: Groq (primary) -> OpenRouter (fallback).
+2026-08-09 17:07:27,641 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-09 17:07:27,985 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-09 17:07:27,993 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-09 17:08:02,119 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-09 17:08:02,723 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-09 17:08:02,726 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-09 17:09:18,573 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-09 17:09:19,278 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-09 17:09:19,280 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-09 17:11:29,793 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-09 17:11:30,559 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-09 17:11:30,563 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-09 17:16:04,414 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-09 17:16:05,007 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-09 17:16:05,010 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-09 17:17:04,346 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-09 17:17:04,952 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-09 17:17:04,954 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-09 17:20:08,130 | WARNING | LiteLLM | register_model: model=aa86cc25821725412ee33f087259a3b8330c83b9893dcb3f3133c386481e27c3 not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 17:20:08,135 | WARNING | LiteLLM | register_model: model=7c89aed5d4cc1cd7d9bd27560d611a8b4470dcc8d2dc1e4c0b1ea817472f624b not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 17:20:08,143 | WARNING | LiteLLM | register_model: model=openrouter/openai/gpt-oss-20b:free not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 17:20:08,167 | INFO | LiteLLM Router | Routing strategy: simple-shuffle
+2026-08-09 17:20:08,170 | INFO | llm_router | LLM Router initialized: Groq (primary) -> OpenRouter (fallback).
+2026-08-09 17:20:08,187 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-09 17:20:09,090 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-09 17:20:09,098 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-09 17:42:41,993 | WARNING | LiteLLM | register_model: model=aa86cc25821725412ee33f087259a3b8330c83b9893dcb3f3133c386481e27c3 not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 17:42:41,998 | WARNING | LiteLLM | register_model: model=7c89aed5d4cc1cd7d9bd27560d611a8b4470dcc8d2dc1e4c0b1ea817472f624b not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 17:42:42,005 | WARNING | LiteLLM | register_model: model=openrouter/openai/gpt-oss-20b:free not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 17:42:42,029 | INFO | LiteLLM Router | Routing strategy: simple-shuffle
+2026-08-09 17:42:42,030 | INFO | llm_router | LLM Router initialized: Groq (primary) -> OpenRouter (fallback).
+2026-08-09 17:42:42,048 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-09 17:42:43,118 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-09 17:42:43,124 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-09 17:43:46,948 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-09 17:43:47,273 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-09 17:43:47,273 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-09 17:44:56,767 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-09 17:44:58,761 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-09 17:44:58,763 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-09 17:50:14,323 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-09 17:50:15,464 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-09 17:50:15,466 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-09 18:00:22,742 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-09 18:00:24,704 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-09 18:00:24,707 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-09 18:09:34,862 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-09 18:09:36,605 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-09 18:09:36,608 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-09 18:10:53,245 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-09 18:10:54,134 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-09 18:10:54,135 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-09 18:11:58,117 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-09 18:11:58,829 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-09 18:11:58,832 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-09 18:12:30,795 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-09 18:12:32,342 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-09 18:12:32,345 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-09 18:14:47,543 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-09 18:14:49,820 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-09 18:14:49,823 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-09 18:18:47,238 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-09 18:18:49,755 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-09 18:18:49,756 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-09 18:20:50,458 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-09 18:20:52,456 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-09 18:20:52,458 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-09 21:38:48,867 | WARNING | LiteLLM | register_model: model=aa86cc25821725412ee33f087259a3b8330c83b9893dcb3f3133c386481e27c3 not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 21:38:48,880 | WARNING | LiteLLM | register_model: model=7c89aed5d4cc1cd7d9bd27560d611a8b4470dcc8d2dc1e4c0b1ea817472f624b not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 21:38:48,886 | WARNING | LiteLLM | register_model: model=openrouter/openai/gpt-oss-20b:free not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 21:38:48,906 | INFO | LiteLLM Router | Routing strategy: simple-shuffle
+2026-08-09 21:38:48,909 | INFO | llm_router | LLM Router initialized: Groq (primary) -> OpenRouter (fallback).
+2026-08-09 21:38:48,925 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-09 21:38:51,971 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-09 21:38:51,979 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-09 22:03:39,454 | WARNING | LiteLLM | register_model: model=aa86cc25821725412ee33f087259a3b8330c83b9893dcb3f3133c386481e27c3 not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 22:03:39,458 | WARNING | LiteLLM | register_model: model=7c89aed5d4cc1cd7d9bd27560d611a8b4470dcc8d2dc1e4c0b1ea817472f624b not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 22:03:39,464 | WARNING | LiteLLM | register_model: model=openrouter/openai/gpt-oss-20b:free not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 22:03:39,485 | INFO | LiteLLM Router | Routing strategy: simple-shuffle
+2026-08-09 22:03:39,487 | INFO | llm_router | LLM Router initialized: Groq (primary) -> OpenRouter (fallback).
+2026-08-09 22:03:39,504 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-09 22:03:43,842 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-09 22:03:43,850 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-09 22:11:50,769 | WARNING | LiteLLM | register_model: model=aa86cc25821725412ee33f087259a3b8330c83b9893dcb3f3133c386481e27c3 not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 22:11:50,773 | WARNING | LiteLLM | register_model: model=7c89aed5d4cc1cd7d9bd27560d611a8b4470dcc8d2dc1e4c0b1ea817472f624b not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 22:11:50,778 | WARNING | LiteLLM | register_model: model=openrouter/openai/gpt-oss-20b:free not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 22:11:50,801 | INFO | LiteLLM Router | Routing strategy: simple-shuffle
+2026-08-09 22:11:50,804 | INFO | llm_router | LLM Router initialized: Groq (primary) -> OpenRouter (fallback).
+2026-08-09 22:11:50,822 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-09 22:11:55,861 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-09 22:11:55,869 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-09 22:39:17,638 | WARNING | LiteLLM | register_model: model=aa86cc25821725412ee33f087259a3b8330c83b9893dcb3f3133c386481e27c3 not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 22:39:17,643 | WARNING | LiteLLM | register_model: model=7c89aed5d4cc1cd7d9bd27560d611a8b4470dcc8d2dc1e4c0b1ea817472f624b not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 22:39:17,649 | WARNING | LiteLLM | register_model: model=openrouter/openai/gpt-oss-20b:free not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 22:39:17,671 | INFO | LiteLLM Router | Routing strategy: simple-shuffle
+2026-08-09 22:39:17,675 | INFO | llm_router | LLM Router initialized: Groq (primary) -> OpenRouter (fallback).
+2026-08-09 22:39:17,693 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-09 22:39:21,113 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-09 22:39:21,119 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-09 22:46:06,582 | WARNING | LiteLLM | register_model: model=aa86cc25821725412ee33f087259a3b8330c83b9893dcb3f3133c386481e27c3 not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 22:46:06,588 | WARNING | LiteLLM | register_model: model=7c89aed5d4cc1cd7d9bd27560d611a8b4470dcc8d2dc1e4c0b1ea817472f624b not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 22:46:06,594 | WARNING | LiteLLM | register_model: model=openrouter/openai/gpt-oss-20b:free not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-09 22:46:06,616 | INFO | LiteLLM Router | Routing strategy: simple-shuffle
+2026-08-09 22:46:06,618 | INFO | llm_router | LLM Router initialized: Groq (primary) -> OpenRouter (fallback).
+2026-08-09 22:46:06,635 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-09 22:46:10,126 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-09 22:46:10,134 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-10 15:42:04,781 | WARNING | LiteLLM | register_model: model=aa86cc25821725412ee33f087259a3b8330c83b9893dcb3f3133c386481e27c3 not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-10 15:42:04,889 | WARNING | LiteLLM | register_model: model=7c89aed5d4cc1cd7d9bd27560d611a8b4470dcc8d2dc1e4c0b1ea817472f624b not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-10 15:42:04,902 | WARNING | LiteLLM | register_model: model=openrouter/openai/gpt-oss-20b:free not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-10 15:42:05,097 | INFO | LiteLLM Router | Routing strategy: simple-shuffle
+2026-08-10 15:42:05,123 | INFO | llm_router | LLM Router initialized: Groq (primary) -> OpenRouter (fallback).
+2026-08-10 15:42:05,161 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-10 15:42:09,241 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-10 15:42:09,249 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-10 15:54:43,828 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-10 15:54:46,963 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-10 15:54:46,964 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-10 15:59:57,953 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-10 16:00:01,655 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-10 16:00:01,657 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-10 16:06:02,681 | WARNING | LiteLLM | register_model: model=aa86cc25821725412ee33f087259a3b8330c83b9893dcb3f3133c386481e27c3 not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-10 16:06:02,687 | WARNING | LiteLLM | register_model: model=7c89aed5d4cc1cd7d9bd27560d611a8b4470dcc8d2dc1e4c0b1ea817472f624b not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-10 16:06:02,695 | WARNING | LiteLLM | register_model: model=openrouter/openai/gpt-oss-20b:free not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-10 16:06:02,715 | INFO | LiteLLM Router | Routing strategy: simple-shuffle
+2026-08-10 16:06:02,717 | INFO | llm_router | LLM Router initialized: Groq (primary) -> OpenRouter (fallback).
+2026-08-10 16:06:02,734 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-10 16:06:04,863 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-10 16:06:04,870 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-10 16:08:08,480 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-10 16:08:09,632 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-10 16:08:09,634 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-10 16:10:30,211 | INFO | ui.main_window | Project scan finished: added=8 updated=0 removed=18 total=8
+2026-08-10 16:10:33,090 | INFO | ui.main_window | Project scan finished: added=0 updated=0 removed=0 total=8
+2026-08-10 16:11:09,545 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-10 16:11:11,242 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-10 16:11:11,244 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-10 16:13:06,178 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-10 16:13:07,464 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-10 16:13:07,466 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-10 16:16:18,641 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-10 16:16:19,997 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-10 16:16:20,000 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-10 16:18:30,172 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-10 16:18:32,056 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-10 16:18:32,059 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-10 16:20:25,526 | WARNING | LiteLLM | register_model: model=aa86cc25821725412ee33f087259a3b8330c83b9893dcb3f3133c386481e27c3 not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-10 16:20:25,532 | WARNING | LiteLLM | register_model: model=7c89aed5d4cc1cd7d9bd27560d611a8b4470dcc8d2dc1e4c0b1ea817472f624b not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-10 16:20:25,540 | WARNING | LiteLLM | register_model: model=openrouter/openai/gpt-oss-20b:free not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-10 16:20:25,558 | INFO | LiteLLM Router | Routing strategy: simple-shuffle
+2026-08-10 16:20:25,560 | INFO | llm_router | LLM Router initialized: Groq (primary) -> OpenRouter (fallback).
+2026-08-10 16:20:25,576 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-10 16:20:26,893 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-10 16:20:26,900 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-10 16:21:20,072 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-10 16:21:21,542 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-10 16:21:21,545 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-10 16:24:03,817 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-10 16:24:05,775 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-10 16:24:05,777 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-10 16:26:16,240 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-10 16:26:18,053 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-10 16:26:18,056 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-10 16:27:53,926 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-10 16:27:56,253 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-10 16:27:56,256 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-10 16:32:20,287 | WARNING | LiteLLM | register_model: model=aa86cc25821725412ee33f087259a3b8330c83b9893dcb3f3133c386481e27c3 not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-10 16:32:20,293 | WARNING | LiteLLM | register_model: model=7c89aed5d4cc1cd7d9bd27560d611a8b4470dcc8d2dc1e4c0b1ea817472f624b not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-10 16:32:20,302 | WARNING | LiteLLM | register_model: model=openrouter/openai/gpt-oss-20b:free not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-10 16:32:20,322 | INFO | LiteLLM Router | Routing strategy: simple-shuffle
+2026-08-10 16:32:20,324 | INFO | llm_router | LLM Router initialized: Groq (primary) -> OpenRouter (fallback).
+2026-08-10 16:32:20,341 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-10 16:32:21,943 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-10 16:32:21,950 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-10 16:33:09,972 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-10 16:33:12,338 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-10 16:33:12,341 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-10 16:34:50,944 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-10 16:34:51,262 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[31m Exception litellm.RateLimitError: RateLimitError: GroqException - {"error":{"message":"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kzfparv4et8t92a80wkr88c3` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98011, Requested 4163. Please try again in 31m18.336s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"tokens","code":"rate_limit_exceeded"}}
+[0m
+2026-08-10 16:34:52,422 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-10 16:34:52,536 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[31m Exception litellm.RateLimitError: RateLimitError: GroqException - {"error":{"message":"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kzfparv4et8t92a80wkr88c3` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98010, Requested 5018. Please try again in 43m36.192s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"tokens","code":"rate_limit_exceeded"}}
+[0m
+2026-08-10 16:34:54,093 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-10 16:34:54,201 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[31m Exception litellm.RateLimitError: RateLimitError: GroqException - {"error":{"message":"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kzfparv4et8t92a80wkr88c3` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98008, Requested 4163. Please try again in 31m15.744s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"tokens","code":"rate_limit_exceeded"}}
+[0m
+2026-08-10 16:34:56,613 | INFO | LiteLLM Router | Trying to fallback b/w models
+2026-08-10 16:34:56,613 | INFO | LiteLLM Router | Falling back to model_group = openrouter-backup
+2026-08-10 16:34:56,617 | INFO | LiteLLM | 
+LiteLLM completion() model= openai/gpt-oss-20b:free; provider = openrouter
+2026-08-10 16:34:58,358 | INFO | LiteLLM Router | litellm.completion(model=openrouter/openai/gpt-oss-20b:free)[31m Exception litellm.RateLimitError: RateLimitError: OpenrouterException - {"error":{"message":"Provider returned error","code":429,"metadata":{"raw":"openai/gpt-oss-20b:free is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumulate your rate limits: https://openrouter.ai/settings/integrations","provider_name":"Darkbloom","is_byok":false,"provider_error_code":"rate_limit_exceeded","limit_source":"upstream_provider_shared_pool","remedy_hint":"Retry shortly, add your own provider key (https://openrouter.ai/settings/integrations), or route to another provider with provider routing: https://openrouter.ai/docs/features/provider-routing","retry_after_seconds":27,"retry_after_seconds_raw":27,"headers":{"Retry-After":"27"}}},"user_id":"user_3HaaX4EUCortjLc663tCS4iUwQP"}[0m
+2026-08-10 16:35:25,887 | INFO | LiteLLM | 
+LiteLLM completion() model= openai/gpt-oss-20b:free; provider = openrouter
+2026-08-10 16:36:29,237 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-10 16:36:29,237 | INFO | LiteLLM Router | litellm.completion(model=openrouter/openai/gpt-oss-20b:free)[32m 200 OK[0m
+2026-08-10 16:36:29,239 | INFO | LiteLLM Router | Successful fallback b/w models.
+2026-08-10 16:39:50,294 | INFO | ui.main_window | Project scan finished: added=174 updated=0 removed=8 total=174
+2026-08-10 16:40:31,644 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-10 16:40:31,999 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[31m Exception litellm.RateLimitError: RateLimitError: GroqException - {"error":{"message":"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kzfparv4et8t92a80wkr88c3` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 97617, Requested 6027. Please try again in 52m28.416s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"tokens","code":"rate_limit_exceeded"}}
+[0m
+2026-08-10 16:40:33,081 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-10 16:40:33,214 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[31m Exception litellm.RateLimitError: RateLimitError: GroqException - {"error":{"message":"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kzfparv4et8t92a80wkr88c3` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 97615, Requested 6027. Please try again in 52m26.688s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"tokens","code":"rate_limit_exceeded"}}
+[0m
+2026-08-10 16:40:34,392 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-10 16:40:34,515 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[31m Exception litellm.RateLimitError: RateLimitError: GroqException - {"error":{"message":"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kzfparv4et8t92a80wkr88c3` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 97614, Requested 6027. Please try again in 52m25.823999999s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"tokens","code":"rate_limit_exceeded"}}
+[0m
+2026-08-10 16:40:37,105 | INFO | LiteLLM Router | Trying to fallback b/w models
+2026-08-10 16:40:37,106 | INFO | LiteLLM Router | Falling back to model_group = openrouter-backup
+2026-08-10 16:40:37,112 | INFO | LiteLLM | 
+LiteLLM completion() model= openai/gpt-oss-20b:free; provider = openrouter
+2026-08-10 16:41:59,297 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-10 16:41:59,299 | INFO | LiteLLM Router | litellm.completion(model=openrouter/openai/gpt-oss-20b:free)[32m 200 OK[0m
+2026-08-10 16:41:59,301 | INFO | LiteLLM Router | Successful fallback b/w models.
+2026-08-10 16:49:25,769 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-10 16:49:26,051 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[31m Exception litellm.RateLimitError: RateLimitError: GroqException - {"error":{"message":"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kzfparv4et8t92a80wkr88c3` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 96999, Requested 6833. Please try again in 55m10.848s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"tokens","code":"rate_limit_exceeded"}}
+[0m
+2026-08-10 16:49:26,793 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-10 16:49:26,915 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[31m Exception litellm.RateLimitError: RateLimitError: GroqException - {"error":{"message":"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kzfparv4et8t92a80wkr88c3` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 96998, Requested 6833. Please try again in 55m9.984s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"tokens","code":"rate_limit_exceeded"}}
+[0m
+2026-08-10 16:49:28,359 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-10 16:49:28,499 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[31m Exception litellm.RateLimitError: RateLimitError: GroqException - {"error":{"message":"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kzfparv4et8t92a80wkr88c3` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 96996, Requested 6833. Please try again in 55m8.256s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"tokens","code":"rate_limit_exceeded"}}
+[0m
+2026-08-10 16:49:31,257 | INFO | LiteLLM Router | Trying to fallback b/w models
+2026-08-10 16:49:31,257 | INFO | LiteLLM Router | Falling back to model_group = openrouter-backup
+2026-08-10 16:49:31,261 | INFO | LiteLLM | 
+LiteLLM completion() model= openai/gpt-oss-20b:free; provider = openrouter
+2026-08-10 16:49:33,206 | INFO | LiteLLM Router | litellm.completion(model=openrouter/openai/gpt-oss-20b:free)[31m Exception litellm.RateLimitError: RateLimitError: OpenrouterException - {"error":{"message":"Provider returned error","code":429,"metadata":{"raw":"openai/gpt-oss-20b:free is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumulate your rate limits: https://openrouter.ai/settings/integrations","provider_name":"Darkbloom","is_byok":false,"provider_error_code":"rate_limit_exceeded","limit_source":"upstream_provider_shared_pool","remedy_hint":"Retry shortly, add your own provider key (https://openrouter.ai/settings/integrations), or route to another provider with provider routing: https://openrouter.ai/docs/features/provider-routing","retry_after_seconds":12,"retry_after_seconds_raw":12,"headers":{"Retry-After":"12"}}},"user_id":"user_3HaaX4EUCortjLc663tCS4iUwQP"}[0m
+2026-08-10 16:49:45,850 | INFO | LiteLLM | 
+LiteLLM completion() model= openai/gpt-oss-20b:free; provider = openrouter
+2026-08-10 16:51:40,683 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-10 16:51:40,684 | INFO | LiteLLM Router | litellm.completion(model=openrouter/openai/gpt-oss-20b:free)[32m 200 OK[0m
+2026-08-10 16:51:40,687 | INFO | LiteLLM Router | Successful fallback b/w models.
+2026-08-10 16:56:24,973 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-10 16:56:25,136 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[31m Exception litellm.RateLimitError: RateLimitError: GroqException - {"error":{"message":"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kzfparv4et8t92a80wkr88c3` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 96514, Requested 7772. Please try again in 1h1m43.104s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"tokens","code":"rate_limit_exceeded"}}
+[0m
+2026-08-10 16:56:26,154 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-10 16:56:26,287 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[31m Exception litellm.RateLimitError: RateLimitError: GroqException - {"error":{"message":"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kzfparv4et8t92a80wkr88c3` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 96512, Requested 7772. Please try again in 1h1m41.376s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"tokens","code":"rate_limit_exceeded"}}
+[0m
+2026-08-10 16:56:27,574 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-10 16:56:27,718 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[31m Exception litellm.RateLimitError: RateLimitError: GroqException - {"error":{"message":"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kzfparv4et8t92a80wkr88c3` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 96511, Requested 7772. Please try again in 1h1m40.512s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"tokens","code":"rate_limit_exceeded"}}
+[0m
+2026-08-10 16:56:30,446 | INFO | LiteLLM Router | Trying to fallback b/w models
+2026-08-10 16:56:30,447 | INFO | LiteLLM Router | Falling back to model_group = openrouter-backup
+2026-08-10 16:56:30,456 | INFO | LiteLLM | 
+LiteLLM completion() model= openai/gpt-oss-20b:free; provider = openrouter
+2026-08-10 16:57:25,849 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-10 16:57:25,851 | INFO | LiteLLM Router | litellm.completion(model=openrouter/openai/gpt-oss-20b:free)[32m 200 OK[0m
+2026-08-10 16:57:25,854 | INFO | LiteLLM Router | Successful fallback b/w models.
+2026-08-10 17:28:26,121 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-10 17:28:26,326 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[31m Exception litellm.RateLimitError: RateLimitError: GroqException - {"error":{"message":"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kzfparv4et8t92a80wkr88c3` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 94290, Requested 7197. Please try again in 21m24.768s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"tokens","code":"rate_limit_exceeded"}}
+[0m
+2026-08-10 17:28:27,557 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-10 17:28:27,698 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[31m Exception litellm.RateLimitError: RateLimitError: GroqException - {"error":{"message":"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kzfparv4et8t92a80wkr88c3` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 94288, Requested 7197. Please try again in 21m23.04s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"tokens","code":"rate_limit_exceeded"}}
+[0m
+2026-08-10 17:28:28,813 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-10 17:28:28,926 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[31m Exception litellm.RateLimitError: RateLimitError: GroqException - {"error":{"message":"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kzfparv4et8t92a80wkr88c3` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 94287, Requested 7197. Please try again in 21m22.176s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"tokens","code":"rate_limit_exceeded"}}
+[0m
+2026-08-10 17:28:31,624 | INFO | LiteLLM Router | Trying to fallback b/w models
+2026-08-10 17:28:31,624 | INFO | LiteLLM Router | Falling back to model_group = openrouter-backup
+2026-08-10 17:28:31,630 | INFO | LiteLLM | 
+LiteLLM completion() model= openai/gpt-oss-20b:free; provider = openrouter
+2026-08-10 17:29:03,385 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-10 17:29:03,387 | INFO | LiteLLM Router | litellm.completion(model=openrouter/openai/gpt-oss-20b:free)[32m 200 OK[0m
+2026-08-10 17:29:03,390 | INFO | LiteLLM Router | Successful fallback b/w models.
+2026-08-13 08:42:13,497 | WARNING | LiteLLM | register_model: model=aa86cc25821725412ee33f087259a3b8330c83b9893dcb3f3133c386481e27c3 not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-13 08:42:13,524 | WARNING | LiteLLM | register_model: model=7c89aed5d4cc1cd7d9bd27560d611a8b4470dcc8d2dc1e4c0b1ea817472f624b not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-13 08:42:13,572 | WARNING | LiteLLM | register_model: model=openrouter/openai/gpt-oss-20b:free not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-13 08:42:13,712 | INFO | LiteLLM Router | Routing strategy: simple-shuffle
+2026-08-13 08:42:13,718 | INFO | llm_router | LLM Router initialized: Groq (primary) -> OpenRouter (fallback).
+2026-08-13 08:42:13,787 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-13 08:42:22,462 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-13 08:42:22,468 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-13 08:44:41,701 | WARNING | LiteLLM | register_model: model=aa86cc25821725412ee33f087259a3b8330c83b9893dcb3f3133c386481e27c3 not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-13 08:44:41,705 | WARNING | LiteLLM | register_model: model=7c89aed5d4cc1cd7d9bd27560d611a8b4470dcc8d2dc1e4c0b1ea817472f624b not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-13 08:44:41,712 | WARNING | LiteLLM | register_model: model=openrouter/openai/gpt-oss-20b:free not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-13 08:44:41,735 | INFO | LiteLLM Router | Routing strategy: simple-shuffle
+2026-08-13 08:44:41,737 | INFO | llm_router | LLM Router initialized: Groq (primary) -> OpenRouter (fallback).
+2026-08-13 08:44:41,755 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-13 08:44:42,245 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-13 08:44:42,253 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-13 08:54:37,959 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-13 08:54:39,988 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-13 08:54:39,991 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-13 09:05:29,460 | INFO | ui.main_window | Project scan finished: added=1 updated=1 removed=173 total=2
+2026-08-15 09:47:55,261 | WARNING | LiteLLM | register_model: model=f1920c6d61fe5e44f0c418f9a1e084d35685df4d222128695c5896dac3faf37a not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-15 09:47:55,320 | WARNING | LiteLLM | register_model: model=dcb7e6df7b29bbc0c6955193e36bacadb4333c0e8b8d4149b544f8af3d664e17 not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-15 09:47:55,333 | WARNING | LiteLLM | register_model: model=6b701067b22216cfecf11034418966ddb80d09f466f7334c723ff2560435f6c1 not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-15 09:47:55,341 | WARNING | LiteLLM | register_model: model=7c89aed5d4cc1cd7d9bd27560d611a8b4470dcc8d2dc1e4c0b1ea817472f624b not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-15 09:47:55,367 | WARNING | LiteLLM | register_model: model=openrouter/openai/gpt-oss-20b:free not in built-in cost map and no prefix/region variant matched; cache cost fields will default to 0. To track cache cost, add cache_creation_input_token_cost and cache_read_input_token_cost to model_info
+2026-08-15 09:47:55,473 | INFO | LiteLLM Router | Routing strategy: simple-shuffle
+2026-08-15 09:47:55,479 | INFO | llm_router | LLM Router initialized: Groq -> Gemini -> DeepSeek -> OpenRouter.
+2026-08-15 09:47:55,560 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-15 09:47:55,959 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-15 09:47:55,998 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
+2026-08-15 09:47:59,356 | WARNING | huggingface_hub.utils._http | Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-08-15 09:47:59,688 | INFO | sentence_transformers.base.model | Loading SentenceTransformer model from sentence-transformers/all-MiniLM-L6-v2.
+2026-08-15 09:48:08,718 | INFO | LiteLLM | 
+LiteLLM completion() model= llama-3.3-70b-versatile; provider = groq
+2026-08-15 09:48:09,085 | INFO | LiteLLM | Wrapper: Completed Call, calling success_handler
+2026-08-15 09:48:09,088 | INFO | LiteLLM Router | litellm.completion(model=groq/llama-3.3-70b-versatile)[32m 200 OK[0m
