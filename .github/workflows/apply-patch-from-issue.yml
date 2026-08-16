@@ -87,4 +87,8 @@ jobs:
           body: |
             This PR contains changes applied from Issue #${{ github.event.issue.number }}.
             Original issue: ${{ github.event.issue.html_url }}
+<<<<<<< HEAD
           labels: "auto-applied"
+=======
+          labels: "auto-applied"
+>>>>>>> chore/add-apply-patch-workflow
