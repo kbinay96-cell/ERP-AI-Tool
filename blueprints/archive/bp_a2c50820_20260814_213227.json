@@ -1,0 +1,151 @@
+{
+  "blueprint_id": "bp_a2c50820",
+  "title": "Chat Application Blueprint",
+  "created_at": "2026-08-14",
+  "source_file": "table-f7b7b353-3557-4a79-a38c-a2baef302c4e.csv",
+  "status": "in_progress",
+  "modules": [
+    {
+      "name": "General",
+      "tasks": [
+        {
+          "id": "T01",
+          "title": "Implement Top bar buttons",
+          "expected_file": "",
+          "expected_function": ""
+        },
+        {
+          "id": "T02",
+          "title": "Design Session row",
+          "expected_file": "",
+          "expected_function": ""
+        },
+        {
+          "id": "T03",
+          "title": "Increase Chat height",
+          "expected_file": "",
+          "expected_function": ""
+        },
+        {
+          "id": "T04",
+          "title": "Implement Drag & Drop blueprint",
+          "expected_file": "",
+          "expected_function": ""
+        },
+        {
+          "id": "T05",
+          "title": "Accept any file format",
+          "expected_file": "",
+          "expected_function": ""
+        },
+        {
+          "id": "T06",
+          "title": "Display Status bar date/time",
+          "expected_file": "",
+          "expected_function": ""
+        },
+        {
+          "id": "T07",
+          "title": "Implement One-click session copy",
+          "expected_file": "",
+          "expected_function": ""
+        },
+        {
+          "id": "T08",
+          "title": "Remove buttons from Right panel",
+          "expected_file": "",
+          "expected_function": ""
+        }
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "T001",
+      "title": "Implement Top bar buttons",
+      "file": "",
+      "expected_function": "",
+      "module": "General",
+      "status": "pending",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "T002",
+      "title": "Design Session row",
+      "file": "",
+      "expected_function": "",
+      "module": "General",
+      "status": "pending",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "T003",
+      "title": "Increase Chat height",
+      "file": "",
+      "expected_function": "",
+      "module": "General",
+      "status": "pending",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "T004",
+      "title": "Implement Drag & Drop blueprint",
+      "file": "",
+      "expected_function": "",
+      "module": "General",
+      "status": "pending",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "T005",
+      "title": "Accept any file format",
+      "file": "",
+      "expected_function": "",
+      "module": "General",
+      "status": "pending",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "T006",
+      "title": "Display Status bar date/time",
+      "file": "",
+      "expected_function": "",
+      "module": "General",
+      "status": "pending",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "T007",
+      "title": "Implement One-click session copy",
+      "file": "",
+      "expected_function": "",
+      "module": "General",
+      "status": "pending",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "T008",
+      "title": "Remove buttons from Right panel",
+      "file": "",
+      "expected_function": "",
+      "module": "General",
+      "status": "pending",
+      "completed_at": null,
+      "notes": ""
+    }
+  ],
+  "progress": {
+    "total_tasks": 8,
+    "done": 0,
+    "pending": 8,
+    "percentage": 0
+  },
+  "loaded_at": "2026-08-14T21:30:23.493065"
+}

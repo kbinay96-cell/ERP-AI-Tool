@@ -1,0 +1,335 @@
+{
+  "blueprint_id": "bp_erp_ai_tool_001",
+  "title": "ERP-AI-Tool - Complete AI Development Workstation",
+  "created_at": "2026-08-12",
+  "loaded_at": "2026-08-12",
+  "status": "in_progress",
+  "tasks": [
+    {
+      "id": "T01",
+      "title": "PyQt6 Main Window with 3-panel layout",
+      "file": "ui/main_window.py",
+      "status": "done",
+      "completed_at": "2026-08-12",
+      "notes": "Modern Claude/Gemini-style workspace with sidebar, chat panel, and utility dock"
+    },
+    {
+      "id": "T02",
+      "title": "Codebase Scanner with AST parsing",
+      "file": "codebase_scanner.py",
+      "status": "done",
+      "completed_at": "2026-08-12",
+      "notes": "Extracts classes, functions, SQL tables from Python/SQL/UI files"
+    },
+    {
+      "id": "T03",
+      "title": "Memory Index for fast offline search",
+      "file": "memory_index.py",
+      "status": "done",
+      "completed_at": "2026-08-12",
+      "notes": "JSON-based persistent storage with incremental updates"
+    },
+    {
+      "id": "T04",
+      "title": "LLM Router with failover chain",
+      "file": "llm_router.py",
+      "status": "done",
+      "completed_at": "2026-08-12",
+      "notes": "Groq → OpenRouter automatic fallback with timeout handling"
+    },
+    {
+      "id": "T05",
+      "title": "Chat Storage with SQLite persistence",
+      "file": "storage/chat_storage.py",
+      "status": "done",
+      "completed_at": "2026-08-12",
+      "notes": "Session management, message history, pinning, auto-titling"
+    },
+    {
+      "id": "T06",
+      "title": "Query Worker for background LLM calls",
+      "file": "ui/query_worker.py",
+      "status": "done",
+      "completed_at": "2026-08-12",
+      "notes": "Non-blocking chat with context-aware prompts"
+    },
+    {
+      "id": "T07",
+      "title": "OpenHands Agent integration",
+      "file": "ui/openhands_worker.py",
+      "status": "done",
+      "completed_at": "2026-08-12",
+      "notes": "File editor + terminal tools with approval flow"
+    },
+    {
+      "id": "T08",
+      "title": "Blueprint Storage system",
+      "file": "storage/blueprint_storage.py",
+      "status": "done",
+      "completed_at": "2026-08-12",
+      "notes": "Load, track, compare, and archive blueprints"
+    },
+    {
+      "id": "T09",
+      "title": "Blueprint auto-load from root",
+      "file": "storage/blueprint_storage.py",
+      "status": "done",
+      "completed_at": "2026-08-15",
+      "notes": "Verified: _auto_load_blueprint() ui/main_window.py mein implemented hai"
+    },
+    {
+      "id": "T10",
+      "title": "Agent retry with exponential backoff",
+      "file": "ui/openhands_worker.py",
+      "status": "done",
+      "completed_at": "2026-08-15",
+      "notes": "Verified: retry backoff (5s/10s/20s) ui/openhands_worker.py mein implemented hai"
+    },
+    {
+      "id": "T11",
+      "title": "Agent timeout handling",
+      "file": "ui/openhands_worker.py",
+      "status": "done",
+      "completed_at": "2026-08-15",
+      "notes": "Verified: 60-sec timeout timer ui/openhands_worker.py mein implemented hai"
+    },
+    {
+      "id": "T12",
+      "title": "Semantic search with ChromaDB",
+      "file": "chroma_memory.py",
+      "status": "done",
+      "completed_at": "2026-08-15",
+      "notes": "Verified: chroma_memory.py fully implemented + query_worker.py mein wired hai"
+    },
+    {
+      "id": "T13",
+      "title": "Web search tool integration",
+      "file": "tools/web_search.py",
+      "status": "done",
+      "completed_at": "2026-08-12",
+      "notes": "DuckDuckGo HTML search for agent use"
+    },
+    {
+      "id": "T14",
+      "title": "Repository reader for file operations",
+      "file": "tools/repo_reader.py",
+      "status": "done",
+      "completed_at": "2026-08-12",
+      "notes": "Read, search, extract functions, list directories"
+    },
+    {
+      "id": "T15",
+      "title": "HTML chat bubble renderer",
+      "file": "ui/chat_formatter.py",
+      "status": "done",
+      "completed_at": "2026-08-12",
+      "notes": "Markdown to HTML with theme support"
+    },
+    {
+      "id": "T16",
+      "title": "Dark/Light theme toggle",
+      "file": "ui/main_window.py",
+      "status": "done",
+      "completed_at": "2026-08-12",
+      "notes": "Full QSS theming with persistent state"
+    },
+    {
+      "id": "T17",
+      "title": "Font zoom controls (A-/A+)",
+      "file": "ui/main_window.py",
+      "status": "done",
+      "completed_at": "2026-08-12",
+      "notes": "Adjustable chat text size"
+    },
+    {
+      "id": "T18",
+      "title": "Session sidebar with search",
+      "file": "ui/main_window.py",
+      "status": "done",
+      "completed_at": "2026-08-12",
+      "notes": "Grouped by Today/Yesterday/Previous 7 Days/Older"
+    },
+    {
+      "id": "T19",
+      "title": "Export chat to Markdown",
+      "file": "ui/main_window.py",
+      "status": "done",
+      "completed_at": "2026-08-12",
+      "notes": "Right-click context menu on sessions"
+    },
+    {
+      "id": "T20",
+      "title": "File tree viewer",
+      "file": "ui/main_window.py",
+      "status": "done",
+      "completed_at": "2026-08-12",
+      "notes": "Basic project structure display in utility dock"
+    },
+    {
+      "id": "T21",
+      "title": "Agent approval/reject buttons",
+      "file": "ui/main_window.py",
+      "status": "done",
+      "completed_at": "2026-08-12",
+      "notes": "User controls for OpenHands confirmation flow"
+    },
+    {
+      "id": "T22",
+      "title": "Agent kill button",
+      "file": "ui/main_window.py",
+      "status": "done",
+      "completed_at": "2026-08-12",
+      "notes": "Graceful pause/stop mechanism"
+    },
+    {
+      "id": "T23",
+      "title": "Project config loader",
+      "file": "projects/medical_erp_v2.json",
+      "status": "done",
+      "completed_at": "2026-08-12",
+      "notes": "Domain-specific glossary and architecture rules"
+    },
+    {
+      "id": "T24",
+      "title": "Dual persona prompt (CA + Architect)",
+      "file": "ui/query_worker.py",
+      "status": "done",
+      "completed_at": "2026-08-12",
+      "notes": "Financial + technical reasoning for business questions"
+    },
+    {
+      "id": "T25",
+      "title": "Honest uncertainty handling",
+      "file": "ui/query_worker.py",
+      "status": "done",
+      "completed_at": "2026-08-12",
+      "notes": "Never invent URLs, file paths, or facts"
+    },
+    {
+      "id": "T26",
+      "title": "Natural Hinglish style",
+      "file": "ui/query_worker.py",
+      "status": "done",
+      "completed_at": "2026-08-12",
+      "notes": "Analogy-first, reasoning transparency, no robotic phrases"
+    },
+    {
+      "id": "T27",
+      "title": "Purchase Requisition analyzer",
+      "file": "purchase_requisition_analyzer.py",
+      "status": "done",
+      "completed_at": "2026-08-12",
+      "notes": "JSON payload routing for PR analysis"
+    },
+    {
+      "id": "T28",
+      "title": "Warehouse Risk analyzer",
+      "file": "erp_inventory_risk_engine.py",
+      "status": "done",
+      "completed_at": "2026-08-12",
+      "notes": "Expiry risk + reorder recommendations"
+    },
+    {
+      "id": "T29",
+      "title": "Financial Ledger Audit",
+      "file": "ai_financial_ledger_audit.py",
+      "status": "done",
+      "completed_at": "2026-08-12",
+      "notes": "SOD violations, duplicate invoices, off-hours posting"
+    },
+    {
+      "id": "T30",
+      "title": "Production Job Scheduler",
+      "file": "ai_production_job_scheduler.py",
+      "status": "done",
+      "completed_at": "2026-08-12",
+      "notes": "Bottleneck detection with shift-aware scheduling"
+    },
+    {
+      "id": "T31",
+      "title": "Inventory Allocator",
+      "file": "ai_inventory_allocator.py",
+      "status": "done",
+      "completed_at": "2026-08-12",
+      "notes": "Multi-warehouse rebalancing with transfer logic"
+    },
+    {
+      "id": "T32",
+      "title": "Agent status indicator",
+      "file": "ui/main_window.py",
+      "status": "done",
+      "completed_at": "2026-08-12",
+      "notes": "Color-coded status label in agent logs tab"
+    },
+    {
+      "id": "T33",
+      "title": "Agent event logging",
+      "file": "ui/openhands_worker.py",
+      "status": "done",
+      "completed_at": "2026-08-12",
+      "notes": "Human-readable action summaries"
+    },
+    {
+      "id": "T34",
+      "title": "Requirements.txt update",
+      "file": "requirements.txt",
+      "status": "done",
+      "completed_at": "2026-08-15",
+      "notes": "Verified: requirements.txt mein sab dependencies present hain"
+    },
+    {
+      "id": "T35",
+      "title": ".env.example template",
+      "file": ".env.example",
+      "status": "done",
+      "completed_at": "2026-08-15",
+      "notes": "Verified: .env.example already created with all 4 API key placeholders"
+    },
+    {
+      "id": "T36",
+      "title": "Agent close cleanup",
+      "file": "ui/main_window.py",
+      "status": "done",
+      "completed_at": "2026-08-15",
+      "notes": "Verified: closeEvent() mein agent worker cleanup implemented hai"
+    },
+    {
+      "id": "T37",
+      "title": "Logs persistence",
+      "file": "logs/coding_ai.log",
+      "status": "done",
+      "completed_at": "2026-08-12",
+      "notes": "File handler with UTF-8 encoding"
+    },
+    {
+      "id": "T38",
+      "title": "Blueprint progress command",
+      "file": "ui/main_window.py",
+      "status": "done",
+      "completed_at": "2026-08-12",
+      "notes": "Chat commands: blueprint status, compare, tasks"
+    },
+    {
+      "id": "T39",
+      "title": "Blueprint load button",
+      "file": "ui/main_window.py",
+      "status": "done",
+      "completed_at": "2026-08-12",
+      "notes": "File dialog for selecting blueprint JSON"
+    },
+    {
+      "id": "T40",
+      "title": "Blueprint progress button",
+      "file": "ui/main_window.py",
+      "status": "done",
+      "completed_at": "2026-08-12",
+      "notes": "Shows progress report + repo comparison"
+    }
+  ],
+  "progress": {
+    "total_tasks": 40,
+    "done": 40,
+    "pending": 0,
+    "percentage": 100
+  }
+}

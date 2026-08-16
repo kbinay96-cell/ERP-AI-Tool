@@ -1,0 +1,151 @@
+{
+  "blueprint_id": "bp_6d6de6e0",
+  "title": "Blueprint Parser",
+  "created_at": "2026-08-14",
+  "source_file": "table-f7b7b353-3557-4a79-a38c-a2baef302c4e.csv",
+  "status": "in_progress",
+  "modules": [
+    {
+      "name": "General",
+      "tasks": [
+        {
+          "id": "T01",
+          "title": "Top bar buttons",
+          "expected_file": "",
+          "expected_function": ""
+        },
+        {
+          "id": "T02",
+          "title": "Session row",
+          "expected_file": "",
+          "expected_function": ""
+        },
+        {
+          "id": "T03",
+          "title": "Chat height increase",
+          "expected_file": "",
+          "expected_function": ""
+        },
+        {
+          "id": "T04",
+          "title": "Drag & Drop blueprint",
+          "expected_file": "",
+          "expected_function": ""
+        },
+        {
+          "id": "T05",
+          "title": "Any format accept",
+          "expected_file": "",
+          "expected_function": ""
+        },
+        {
+          "id": "T06",
+          "title": "Status bar date/time",
+          "expected_file": "",
+          "expected_function": ""
+        },
+        {
+          "id": "T07",
+          "title": "One-click session copy",
+          "expected_file": "",
+          "expected_function": ""
+        },
+        {
+          "id": "T08",
+          "title": "Right panel se purane buttons hatao",
+          "expected_file": "",
+          "expected_function": ""
+        }
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "T001",
+      "title": "Top bar buttons",
+      "file": "",
+      "expected_function": "",
+      "module": "General",
+      "status": "pending",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "T002",
+      "title": "Session row",
+      "file": "",
+      "expected_function": "",
+      "module": "General",
+      "status": "pending",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "T003",
+      "title": "Chat height increase",
+      "file": "",
+      "expected_function": "",
+      "module": "General",
+      "status": "pending",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "T004",
+      "title": "Drag & Drop blueprint",
+      "file": "",
+      "expected_function": "",
+      "module": "General",
+      "status": "pending",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "T005",
+      "title": "Any format accept",
+      "file": "",
+      "expected_function": "",
+      "module": "General",
+      "status": "pending",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "T006",
+      "title": "Status bar date/time",
+      "file": "",
+      "expected_function": "",
+      "module": "General",
+      "status": "pending",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "T007",
+      "title": "One-click session copy",
+      "file": "",
+      "expected_function": "",
+      "module": "General",
+      "status": "pending",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "T008",
+      "title": "Right panel se purane buttons hatao",
+      "file": "",
+      "expected_function": "",
+      "module": "General",
+      "status": "pending",
+      "completed_at": null,
+      "notes": ""
+    }
+  ],
+  "progress": {
+    "total_tasks": 8,
+    "done": 0,
+    "pending": 8,
+    "percentage": 0
+  },
+  "loaded_at": "2026-08-14T21:51:06.201042"
+}

@@ -1,0 +1,151 @@
+{
+  "blueprint_id": "bp_9ed8a458",
+  "title": "Chat Application Enhancement",
+  "created_at": "2026-08-14",
+  "source_file": "table-f7b7b353-3557-4a79-a38c-a2baef302c4e.csv",
+  "status": "in_progress",
+  "modules": [
+    {
+      "name": "General",
+      "tasks": [
+        {
+          "id": "T01",
+          "title": "Implement Top bar buttons functionality",
+          "expected_file": "",
+          "expected_function": ""
+        },
+        {
+          "id": "T02",
+          "title": "Design Session row with required details",
+          "expected_file": "",
+          "expected_function": ""
+        },
+        {
+          "id": "T03",
+          "title": "Increase chat height by compacting top bar",
+          "expected_file": "",
+          "expected_function": ""
+        },
+        {
+          "id": "T04",
+          "title": "Develop Drag & Drop blueprint feature",
+          "expected_file": "",
+          "expected_function": ""
+        },
+        {
+          "id": "T05",
+          "title": "Enhance app to accept any file format",
+          "expected_file": "",
+          "expected_function": ""
+        },
+        {
+          "id": "T06",
+          "title": "Display live date and time in status bar",
+          "expected_file": "",
+          "expected_function": ""
+        },
+        {
+          "id": "T07",
+          "title": "Implement one-click session copy feature",
+          "expected_file": "",
+          "expected_function": ""
+        },
+        {
+          "id": "T08",
+          "title": "Remove unnecessary buttons from right panel",
+          "expected_file": "",
+          "expected_function": ""
+        }
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "T001",
+      "title": "Implement Top bar buttons functionality",
+      "file": "",
+      "expected_function": "",
+      "module": "General",
+      "status": "pending",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "T002",
+      "title": "Design Session row with required details",
+      "file": "",
+      "expected_function": "",
+      "module": "General",
+      "status": "pending",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "T003",
+      "title": "Increase chat height by compacting top bar",
+      "file": "",
+      "expected_function": "",
+      "module": "General",
+      "status": "pending",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "T004",
+      "title": "Develop Drag & Drop blueprint feature",
+      "file": "",
+      "expected_function": "",
+      "module": "General",
+      "status": "pending",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "T005",
+      "title": "Enhance app to accept any file format",
+      "file": "",
+      "expected_function": "",
+      "module": "General",
+      "status": "pending",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "T006",
+      "title": "Display live date and time in status bar",
+      "file": "",
+      "expected_function": "",
+      "module": "General",
+      "status": "pending",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "T007",
+      "title": "Implement one-click session copy feature",
+      "file": "",
+      "expected_function": "",
+      "module": "General",
+      "status": "pending",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "T008",
+      "title": "Remove unnecessary buttons from right panel",
+      "file": "",
+      "expected_function": "",
+      "module": "General",
+      "status": "pending",
+      "completed_at": null,
+      "notes": ""
+    }
+  ],
+  "progress": {
+    "total_tasks": 8,
+    "done": 0,
+    "pending": 8,
+    "percentage": 0
+  },
+  "loaded_at": "2026-08-14T22:12:20.576492"
+}

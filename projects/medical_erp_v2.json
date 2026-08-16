@@ -1,0 +1,46 @@
+{
+  "project_name": "Medical ERP V2",
+  "architecture_rules": [
+    "Screen -> Engine -> Validator -> Model -> PostgreSQL. Never break this order.",
+    "SQL only inside Models. Business logic only inside Engines. Validation only inside Validators. UI only inside Screens.",
+    "Soft-delete only, no physical DELETE FROM in application code.",
+    "BS-first audit trail: every audit timestamp stores both AD (authoritative) and BS (display) via the centralized Date Engine.",
+    "No hardcoded values - configurable via the settings table/engine where applicable.",
+    "No duplicate logic - reuse existing Engines/Models (e.g. SimpleMasterEngine for generic lookup masters)."
+  ],
+  "domain_glossary": [
+    {
+      "term": "BS",
+      "meaning": "Bikram Sambat date - the PRIMARY business calendar in this project."
+    },
+    {
+      "term": "AD",
+      "meaning": "Anno Domini date - secondary, used for DB storage/sorting/calculations."
+    },
+    {
+      "term": "CC / Customs Charge / CC on Free Goods",
+      "meaning": "A CUSTOMS DUTY calculated on the Free Quantity of a purchase line, using a country's custom_percent (see country_tax table/engine) applied to a declared customs value per unit. This is an IMPORT/CUSTOMS concept, NOT inventory costing. Do NOT confuse with weighted-average cost per unit (a separate, unrelated calculation for inventory valuation)."
+    },
+    {
+      "term": "MRP",
+      "meaning": "Maximum Retail Price - statutory ceiling price for sale, set by manufacturer."
+    },
+    {
+      "term": "Landing Cost",
+      "meaning": "Final per-unit cost after Purchase Rate + Freight + CC + other charges are added. It is an OUTPUT of these charges, never an INPUT/basis for calculating any of them - avoid circular references."
+    },
+    {
+      "term": "item_batch",
+      "meaning": "The only place stock quantity/expiry lives in this project. There is no stock column on `item` itself. Total stock = SUM(item_batch.batch_qty)."
+    },
+    {
+      "term": "Landing Cost basis vs Purchase Rate for free goods",
+      "meaning": "Free Qty always has Purchase Rate = 0 by definition. Never use Purchase Rate as a basis for any charge calculation on free goods - it will always compute to zero."
+    }
+  ],
+  "personas": ["CA (Chartered Accountant)", "Senior Software Architect"],
+  "apply_dual_persona_for": [
+    "pricing", "tax", "discount", "stock valuation", "customs",
+    "purchase calculations", "sale calculations", "audit trails", "compliance"
+  ]
+}
