@@ -1,28 +1,9 @@
 """
 chroma_memory.py
 
-Memory/Index Layer - Option B (Local ChromaDB, semantic search)
----------------------------------------------------------
-Purpose:
-    Same goal as memory_index.py (persist codebase understanding),
-    but instead of plain keyword matching, this allows MEANING-based
-    search - e.g. searching "how does BS date conversion work" will
-    find engines/date_engine.py even if those exact words are not
-    in the code, because it compares MEANING (via embeddings), not
-    exact text.
-
-HONESTY NOTE ON "FREE + OFFLINE":
-    - ChromaDB itself: 100% local, no API, no cost, runs entirely
-      on your machine (stores data in a local folder).
-    - The embedding model (sentence-transformers, e.g. "all-MiniLM-L6-v2"):
-      downloaded ONCE from Hugging Face (~80MB, free, no login needed).
-      After that first download, it runs 100% offline with zero API
-      calls and zero cost, forever. If you have literally no internet
-      ever (not even once), use memory_index.py (Option A) instead,
-      which needs nothing at all.
-
-Install once:
-    pip install chromadb sentence-transformers
+Local ChromaDB semantic memory layer. Defensive access changes made to avoid
+KeyError when collection.get() returns unexpected shapes in different chromadb
+versions.
 """
 
 from __future__ import annotations
@@ -97,7 +78,8 @@ class ChromaMemory:
         summaries = scan_project(project_root)
 
         # Clear existing entries for a clean rebuild.
-        existing_ids = self._collection.get()["ids"]
+        existing = self._collection.get() or {}
+        existing_ids = existing.get("ids", [])
         if existing_ids:
             self._collection.delete(ids=existing_ids)
 
@@ -149,7 +131,7 @@ class ChromaMemory:
                 documents=to_upsert_docs, ids=to_upsert_ids, metadatas=to_upsert_meta
             )
 
-        removed_ids = [fid for fid in existing["ids"] if fid not in current_ids]
+        removed_ids = [fid for fid in existing.get("ids", []) if fid not in current_ids]
         if removed_ids:
             self._collection.delete(ids=removed_ids)
 
@@ -168,11 +150,11 @@ class ChromaMemory:
         results = self._collection.query(query_texts=[query], n_results=top_k)
 
         output = []
-        for i in range(len(results["ids"][0])):
+        for i in range(len(results.get("ids", [[]])[0])):
             output.append({
-                "file": results["ids"][0][i],
-                "relevance_score": results["distances"][0][i] if results.get("distances") else None,
-                "summary": results["documents"][0][i],
+                "file": results.get("ids", [[]])[0][i],
+                "relevance_score": results.get("distances", [[]])[0][i] if results.get("distances") else None,
+                "summary": results.get("documents", [[]])[0][i],
             })
         return output
 
