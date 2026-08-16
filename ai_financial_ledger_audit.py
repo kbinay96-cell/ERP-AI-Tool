@@ -64,13 +64,22 @@ def run_audit(audit_data: dict) -> dict:
             risk_score += 25
 
         # Rule 3: Off-Hours Posting (11 PM - 5 AM)
+        dt = None
         try:
             dt = datetime.fromisoformat(txn.timestamp)
+        except ValueError:
+            # Best-effort fallback if the timestamp is not strictly ISO-formatted.
+            try:
+                from dateutil import parser
+
+                dt = parser.parse(txn.timestamp)
+            except Exception:
+                dt = None
+
+        if dt is not None:
             if dt.hour >= 23 or dt.hour < 5:
                 flags.append("OFF_HOURS_POSTING")
                 risk_score += 25
-        except ValueError:
-            pass
 
         # Rule 4: Missing Approval for High Value Transactions (>100,000)
         if txn.amount > 100000 and (not txn.approved_by or txn.approved_by.strip() == ""):
