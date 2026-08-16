@@ -15,7 +15,7 @@ import difflib
 import os
 import shlex
 import subprocess
-from dataclasses import asdict
+from dataclasses import asdict, is_dataclass
 from pathlib import Path
 from typing import List, Optional
 
@@ -79,6 +79,16 @@ class ApplyAndRunRequest(BaseModel):
     pytest_args: Optional[str] = ""
 
 
+def _to_dict(obj):
+    if is_dataclass(obj):
+        return asdict(obj)
+    if hasattr(obj, "__dict__"):
+        return vars(obj)
+    if isinstance(obj, dict):
+        return obj
+    return str(obj)
+
+
 @app.post("/apply_and_run_sandbox")
 def apply_and_run_sandbox(req: ApplyAndRunRequest):
     root = Path(req.project_root or ".").resolve()
@@ -91,7 +101,7 @@ def apply_and_run_sandbox(req: ApplyAndRunRequest):
     if pytest_args:
         cmd = f"pytest {pytest_args} -q"
     else:
-        return {"apply_results": [asdict(r) for r in apply_results], "pytest": None}
+        return {"apply_results": [_to_dict(r) for r in apply_results], "pytest": None}
 
     try:
         proc = subprocess.run(
@@ -101,7 +111,7 @@ def apply_and_run_sandbox(req: ApplyAndRunRequest):
         raise HTTPException(status_code=500, detail="pytest timed out")
 
     return {
-        "apply_results": [asdict(r) for r in apply_results],
+        "apply_results": [_to_dict(r) for r in apply_results],
         "pytest": {
             "returncode": proc.returncode,
             "stdout": proc.stdout,
