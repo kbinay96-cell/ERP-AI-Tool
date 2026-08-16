@@ -1,82 +1,110 @@
-"""
+﻿"""
 caretaker_orchestrator.py
 
-A minimal FastAPI single-window orchestrator that exposes endpoints to:
-- accept pasted external code blocks and apply them (dry_run by default)
-- run a pytest subset against the project
+FastAPI single-window orchestrator for the Medical ERP v2 caretaker.
 
-Security note: This is intended for local development and trusted networks only.
+Endpoints:
+- POST /preview_code_blocks
+- POST /apply_and_run_sandbox
+
+Security: intended for local/trusted usage only.
 """
 from __future__ import annotations
 
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-from typing import List, Optional
-import subprocess
+import difflib
 import os
 import shlex
+import subprocess
+from dataclasses import asdict
+from pathlib import Path
+from typing import List, Optional
+
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
 
 from code_block_applier import parse_code_blocks, apply_all_blocks
 
-app = FastAPI(title="ERP-AI Caretaker Orchestrator")
+app = FastAPI(title="ERP-AI Caretaker Orchestrator (Medical ERP v2)")
 
 
-class ApplyRequest(BaseModel):
+class RawRequest(BaseModel):
     raw_text: str
     project_root: Optional[str] = "."
-    dry_run: Optional[bool] = True
 
 
-class ApplyResultItem(BaseModel):
+class PreviewItem(BaseModel):
     file_path: str
-    success: bool
-    message: str
-    backup_path: Optional[str] = None
+    diff: str
 
 
-@app.post("/apply_code_blocks", response_model=List[ApplyResultItem])
-def apply_code_blocks(req: ApplyRequest):
-    # Validate project root
-    root = os.path.abspath(req.project_root or ".")
-    if not os.path.isdir(root):
+@app.post("/preview_code_blocks", response_model=List[PreviewItem])
+def preview_code_blocks(req: RawRequest):
+    root = Path(req.project_root or ".").resolve()
+    if not root.exists() or not root.is_dir():
         raise HTTPException(status_code=400, detail="project_root does not exist")
 
     blocks = parse_code_blocks(req.raw_text)
     if not blocks:
         raise HTTPException(status_code=400, detail="No code blocks parsed from input")
 
-    if req.dry_run:
-        # Return a simulated result listing parsed blocks without applying
-        return [ApplyResultItem(file_path=b.file_path, success=False, message="DRY_RUN: would apply", backup_path=None) for b in blocks]
+    previews: List[PreviewItem] = []
+    for b in blocks:
+        target = (root / b.file_path).resolve()
+        try:
+            target.relative_to(root)
+        except Exception:
+            raise HTTPException(status_code=400, detail=f"Invalid target path: {b.file_path}")
 
-    # Apply blocks for real
-    results = apply_all_blocks(root, req.raw_text)
-    # Convert ApplyResult objects to serializable dicts
-    output = []
-    for r in results:
-        output.append(ApplyResultItem(file_path=r.file_path, success=r.success, message=r.message, backup_path=r.backup_path))
-    return output
+        existing_text = ""
+        if target.exists():
+            existing_text = target.read_text(encoding="utf-8")
+        new_text = b.content
+
+        diff_lines = difflib.unified_diff(
+            existing_text.splitlines(keepends=True),
+            new_text.splitlines(keepends=True),
+            fromfile=str(target),
+            tofile=str(target),
+            lineterm="",
+        )
+        diff_str = "".join(diff_lines)
+        previews.append(PreviewItem(file_path=b.file_path, diff=diff_str))
+
+    return previews
 
 
-class TestRequest(BaseModel):
+class ApplyAndRunRequest(BaseModel):
+    raw_text: str
     project_root: Optional[str] = "."
     pytest_args: Optional[str] = ""
 
 
-@app.post("/run_tests")
-def run_tests(req: TestRequest):
-    root = os.path.abspath(req.project_root or ".")
-    if not os.path.isdir(root):
+@app.post("/apply_and_run_sandbox")
+def apply_and_run_sandbox(req: ApplyAndRunRequest):
+    root = Path(req.project_root or ".").resolve()
+    if not root.exists() or not root.is_dir():
         raise HTTPException(status_code=400, detail="project_root does not exist")
 
-    args = f"pytest {req.pytest_args} -q"
+    apply_results = apply_all_blocks(str(root), req.raw_text)
+
+    pytest_args = (req.pytest_args or "").strip()
+    if pytest_args:
+        cmd = f"pytest {pytest_args} -q"
+    else:
+        return {"apply_results": [asdict(r) for r in apply_results], "pytest": None}
+
     try:
-        proc = subprocess.run(shlex.split(args), cwd=root, capture_output=True, text=True, timeout=300)
+        proc = subprocess.run(
+            shlex.split(cmd), cwd=str(root), capture_output=True, text=True, timeout=300
+        )
     except subprocess.TimeoutExpired:
         raise HTTPException(status_code=500, detail="pytest timed out")
 
     return {
-        "returncode": proc.returncode,
-        "stdout": proc.stdout,
-        "stderr": proc.stderr,
+        "apply_results": [asdict(r) for r in apply_results],
+        "pytest": {
+            "returncode": proc.returncode,
+            "stdout": proc.stdout,
+            "stderr": proc.stderr,
+        },
     }
