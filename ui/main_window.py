@@ -749,50 +749,50 @@ class MainWindow(QMainWindow):
         self.btn_start_agent = QPushButton("▶ Start Agent")
         self.btn_start_agent.setToolTip("Chat box ke text ko instruction maan kar agent start karega")
         self.btn_start_agent.setEnabled(_OPENHANDS_AVAILABLE)
-        self.btn_start_agent.setStyleSheet(\"\"\"
+        self.btn_start_agent.setStyleSheet("""
             QPushButton { 
                 background-color: #4f7cff; color: white; font-weight: bold; 
                 border: none; padding: 6px 12px; border-radius: 4px; 
             }
             QPushButton:disabled { background-color: #2A2A38; color: #666666; }
             QPushButton:hover:!disabled { background-color: #658cff; }
-        \"\"\")
+        """)
         row.addWidget(self.btn_start_agent)
 
         self.btn_approve_agent = QPushButton("✅ Approve")
         self.btn_approve_agent.setEnabled(False)
-        self.btn_approve_agent.setStyleSheet(\"\"\"
+        self.btn_approve_agent.setStyleSheet("""
             QPushButton { 
                 background-color: #2E7D32; color: white; font-weight: bold; 
                 border: none; padding: 6px 12px; border-radius: 4px; 
             }
             QPushButton:disabled { background-color: #2A2A38; color: #666666; }
             QPushButton:hover:!disabled { background-color: #388E3C; }
-        \"\"\")
+        """)
         row.addWidget(self.btn_approve_agent)
 
         self.btn_reject_agent = QPushButton("❌ Reject")
         self.btn_reject_agent.setEnabled(False)
-        self.btn_reject_agent.setStyleSheet(\"\"\"
+        self.btn_reject_agent.setStyleSheet("""
             QPushButton { 
                 background-color: #C62828; color: white; font-weight: bold; 
                 border: none; padding: 6px 12px; border-radius: 4px; 
             }
             QPushButton:disabled { background-color: #2A2A38; color: #666666; }
             QPushButton:hover:!disabled { background-color: #D32F2F; }
-        \"\"\")
+        """)
         row.addWidget(self.btn_reject_agent)
 
         self.btn_kill_agent = QPushButton("⏹ Kill")
         self.btn_kill_agent.setEnabled(False)
-        self.btn_kill_agent.setStyleSheet(\"\"\"
+        self.btn_kill_agent.setStyleSheet("""
             QPushButton { 
                 background-color: #E65100; color: white; font-weight: bold; 
                 border: none; padding: 6px 12px; border-radius: 4px; 
             }
             QPushButton:disabled { background-color: #2A2A38; color: #666666; }
             QPushButton:hover:!disabled { background-color: #F57C00; }
-        \"\"\")
+        """)
         row.addWidget(self.btn_kill_agent)
 
         return row
