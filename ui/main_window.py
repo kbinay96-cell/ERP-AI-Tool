@@ -745,6 +745,56 @@ class MainWindow(QMainWindow):
         self.btn_send_query.setMinimumWidth(88)
         row.addWidget(self.btn_send_query)
 
+        # --- Agent control buttons moved next to Send button (single-window mode) ---
+        self.btn_start_agent = QPushButton("▶ Start Agent")
+        self.btn_start_agent.setToolTip("Chat box ke text ko instruction maan kar agent start karega")
+        self.btn_start_agent.setEnabled(_OPENHANDS_AVAILABLE)
+        self.btn_start_agent.setStyleSheet(\"\"\"
+            QPushButton { 
+                background-color: #4f7cff; color: white; font-weight: bold; 
+                border: none; padding: 6px 12px; border-radius: 4px; 
+            }
+            QPushButton:disabled { background-color: #2A2A38; color: #666666; }
+            QPushButton:hover:!disabled { background-color: #658cff; }
+        \"\"\")
+        row.addWidget(self.btn_start_agent)
+
+        self.btn_approve_agent = QPushButton("✅ Approve")
+        self.btn_approve_agent.setEnabled(False)
+        self.btn_approve_agent.setStyleSheet(\"\"\"
+            QPushButton { 
+                background-color: #2E7D32; color: white; font-weight: bold; 
+                border: none; padding: 6px 12px; border-radius: 4px; 
+            }
+            QPushButton:disabled { background-color: #2A2A38; color: #666666; }
+            QPushButton:hover:!disabled { background-color: #388E3C; }
+        \"\"\")
+        row.addWidget(self.btn_approve_agent)
+
+        self.btn_reject_agent = QPushButton("❌ Reject")
+        self.btn_reject_agent.setEnabled(False)
+        self.btn_reject_agent.setStyleSheet(\"\"\"
+            QPushButton { 
+                background-color: #C62828; color: white; font-weight: bold; 
+                border: none; padding: 6px 12px; border-radius: 4px; 
+            }
+            QPushButton:disabled { background-color: #2A2A38; color: #666666; }
+            QPushButton:hover:!disabled { background-color: #D32F2F; }
+        \"\"\")
+        row.addWidget(self.btn_reject_agent)
+
+        self.btn_kill_agent = QPushButton("⏹ Kill")
+        self.btn_kill_agent.setEnabled(False)
+        self.btn_kill_agent.setStyleSheet(\"\"\"
+            QPushButton { 
+                background-color: #E65100; color: white; font-weight: bold; 
+                border: none; padding: 6px 12px; border-radius: 4px; 
+            }
+            QPushButton:disabled { background-color: #2A2A38; color: #666666; }
+            QPushButton:hover:!disabled { background-color: #F57C00; }
+        \"\"\")
+        row.addWidget(self.btn_kill_agent)
+
         return row
 
     def _build_utility_dock(self) -> QDockWidget:
@@ -825,69 +875,14 @@ class MainWindow(QMainWindow):
         layout.setContentsMargins(8, 8, 8, 8)
         layout.setSpacing(6)
 
-        # ---- Line 2: Agent action buttons (NEECHE) ----
-        ctrl_layout = QHBoxLayout()
-
-        self.btn_start_agent = QPushButton("▶ Start Agent")
-        self.btn_start_agent.setToolTip("Chat box ke text ko instruction maan kar agent start karega")
-        self.btn_start_agent.setEnabled(_OPENHANDS_AVAILABLE)
-        self.btn_start_agent.setStyleSheet("""
-            QPushButton { 
-                background-color: #4f7cff; color: white; font-weight: bold; 
-                border: none; padding: 6px 12px; border-radius: 4px; 
-            }
-            QPushButton:disabled { background-color: #2A2A38; color: #666666; }
-            QPushButton:hover:!disabled { background-color: #658cff; }
-        """)
-        ctrl_layout.addWidget(self.btn_start_agent)
-
-        self.btn_approve_agent = QPushButton("✅ Approve")
-        self.btn_approve_agent.setEnabled(False)
-        self.btn_approve_agent.setStyleSheet("""
-            QPushButton { 
-                background-color: #2E7D32; color: white; font-weight: bold; 
-                border: none; padding: 6px 12px; border-radius: 4px; 
-            }
-            QPushButton:disabled { background-color: #2A2A38; color: #666666; }
-            QPushButton:hover:!disabled { background-color: #388E3C; }
-        """)
-        ctrl_layout.addWidget(self.btn_approve_agent)
-
-        self.btn_reject_agent = QPushButton("❌ Reject")
-        self.btn_reject_agent.setEnabled(False)
-        self.btn_reject_agent.setStyleSheet("""
-            QPushButton { 
-                background-color: #C62828; color: white; font-weight: bold; 
-                border: none; padding: 6px 12px; border-radius: 4px; 
-            }
-            QPushButton:disabled { background-color: #2A2A38; color: #666666; }
-            QPushButton:hover:!disabled { background-color: #D32F2F; }
-        """)
-        ctrl_layout.addWidget(self.btn_reject_agent)
-
-        self.btn_kill_agent = QPushButton("⏹ Kill")
-        self.btn_kill_agent.setEnabled(False)
-        self.btn_kill_agent.setStyleSheet("""
-            QPushButton { 
-                background-color: #E65100; color: white; font-weight: bold; 
-                border: none; padding: 6px 12px; border-radius: 4px; 
-            }
-            QPushButton:disabled { background-color: #2A2A38; color: #666666; }
-            QPushButton:hover:!disabled { background-color: #F57C00; }
-        """)
-        ctrl_layout.addWidget(self.btn_kill_agent)
-
-        ctrl_layout.addStretch(1)
-        layout.addLayout(ctrl_layout)
-
-        # ---- Status Indicator ----
+        # Status line (keeps visible in Agent Logs tab)
         self.lbl_agent_status = QLabel("⚪ Agent Idle")
         self.lbl_agent_status.setStyleSheet(
             "color: #9aa1b5; font-size: 13px; font-weight: bold; padding: 4px 0;"
         )
         layout.addWidget(self.lbl_agent_status)
 
-        # ---- Agent Logs Text Area ----
+        # Agent Logs Text Area (read-only)
         self.txt_agent_logs = QTextEdit()
         self.txt_agent_logs.setObjectName("AgentLogs")
         self.txt_agent_logs.setReadOnly(True)
@@ -1970,13 +1965,21 @@ class MainWindow(QMainWindow):
         return False
 
     def _on_agent_event(self, message: str) -> None:
-        # Router/System messages direct dikhao
-        if message.startswith("[Router]") or message.startswith("[System]"):
-            self.txt_agent_logs.append(message)
-            return
+        # Route system/router messages into system chat and others as assistant messages.
+        try:
+            if message.startswith("[Router]") or message.startswith("[System]"):
+                # show in chat as system message
+                self._append_message("system", message)
+            else:
+                # show agent output as assistant message in chat
+                self._append_message("assistant", message)
+        except Exception:
+            # defensive: if _append_message fails for some reason, at least append to agent logs
+            pass
 
-        # Agent actions aur results direct dikhao
-        self.txt_agent_logs.append(message)
+        # Always keep a full plain-text copy in agent logs for debugging
+        if hasattr(self, "txt_agent_logs") and self.txt_agent_logs is not None:
+            self.txt_agent_logs.append(message)
     
     def _on_load_blueprint_clicked(self) -> None:
         """Blueprint file load karo - ANY format, ANY language."""
