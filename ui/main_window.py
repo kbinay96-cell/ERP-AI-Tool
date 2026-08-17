@@ -496,6 +496,8 @@ class MainWindow(QMainWindow):
         self._load_last_project_folder()
         self._auto_load_blueprint()
         self._last_agent_text: str = ""
+        self._agent_waiting_for_user: bool = False
+        self._agent_pending_detail: str | None = None
 
         # Status bar mein live date/time
         self.lbl_datetime = QLabel("")
@@ -1446,12 +1448,43 @@ class MainWindow(QMainWindow):
             self._active_session_id = self.storage.create_session("New Chat")
             self._reload_sessions_list(select_session_id=self._active_session_id)
 
+        # Append user message to chat and clear input (keeps conversation consistent)
         self._append_message("user", query_text)
         self.txt_query_input.clear()
 
+        # --- If agent is waiting for approval, allow inline chat response ---
+        lower_q = query_text.lower()
+        if self._agent_waiting_for_user and lower_q in ("approve", "yes", "y"):
+            self._append_message("system", "Processing your approval...")
+            # clear waiting flag before invoking
+            self._agent_waiting_for_user = False
+            self._agent_pending_detail = None
+            self._on_approve_agent_clicked()
+            return
+        if self._agent_waiting_for_user and lower_q in ("reject", "no", "n"):
+            self._append_message("system", "Processing your rejection...")
+            self._agent_waiting_for_user = False
+            self._agent_pending_detail = None
+            self._on_reject_agent_clicked()
+            return
+
+        # --- /agent command to start the agent from chat ---
+        if query_text.startswith("/agent"):
+            instruction = query_text[len("/agent"):].strip()
+            if not instruction:
+                self._append_message("system", "Usage: /agent <instruction>")
+                return
+            # Pre-fill the input with the instruction and reuse existing start logic
+            self.txt_query_input.setText(instruction)
+            # Start agent (this will read txt_query_input)
+            self._on_start_agent_clicked()
+            return
+
+        # If this was a tool-routing JSON or other tool command, handle it
         if self._try_route_tool(query_text):
             return
 
+        # Normal LLM query path (existing behavior)
         self._last_query_text = query_text
         self._set_querying_ui_state(active=True)
 
@@ -2021,16 +2054,25 @@ class MainWindow(QMainWindow):
         self.statusBar().showMessage(text)
 
     def _on_agent_waiting(self, message: str) -> None:
+        # Agent approval required — set internal waiting flag and notify user in chat + agent logs
         self._agent_tick_timer.stop()
         self.txt_agent_logs.append(f"<b style='color:orange;'>⏳ [WAITING FOR APPROVAL]</b>")
         self.txt_agent_logs.append(f"<b style='color:#FFD54F;'>  → {message}</b>")
+
+        # set waiting state
+        self._agent_waiting_for_user = True
+        self._agent_pending_detail = message
+
+        # Enable UI buttons as before
         self.btn_approve_agent.setEnabled(True)
         self.btn_reject_agent.setEnabled(True)
         self._set_agent_status("⏳ Waiting for Your Approval", "#FFA726")
+
+        # Also append a clear system message into the chat so user can reply inline ("approve" / "reject")
         self._append_message(
             "system",
             f"⚠️ **Agent Approval Required!**\n\n**Action:** {message}\n\n"
-            "Right panel ke 'Agent Logs' tab mein Approve/Reject karein."
+            "Reply with `approve` or `reject` in the chat to respond, or use the Approve/Reject buttons in the right panel."
         )
 
     def _on_approve_agent_clicked(self) -> None:
@@ -2039,7 +2081,10 @@ class MainWindow(QMainWindow):
             self.btn_approve_agent.setEnabled(False)
             self.btn_reject_agent.setEnabled(False)
             self._set_agent_status("🔄 Agent Processing...", "#4f7cff")
-            # 🔴 Threading fix: UI freeze nahi hoga
+            # clear waiting flag
+            self._agent_waiting_for_user = False
+            self._agent_pending_detail = None
+            # Threaded call to avoid UI freeze
             import threading
             threading.Thread(target=self._agent_worker.approve_and_continue, daemon=True).start()
 
@@ -2049,7 +2094,10 @@ class MainWindow(QMainWindow):
             self.btn_approve_agent.setEnabled(False)
             self.btn_reject_agent.setEnabled(False)
             self._set_agent_status("🔄 Agent Processing...", "#4f7cff")
-            # 🔴 Threading fix: UI freeze nahi hoga
+            # clear waiting flag
+            self._agent_waiting_for_user = False
+            self._agent_pending_detail = None
+            # Threaded call to avoid UI freeze
             import threading
             threading.Thread(
                 target=lambda: self._agent_worker.reject_pending("User rejected the action via UI"),
