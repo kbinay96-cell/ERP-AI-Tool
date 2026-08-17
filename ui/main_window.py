@@ -536,8 +536,8 @@ class MainWindow(QMainWindow):
 
     def _build_menu_bar(self) -> None:
         view_menu = self.menuBar().addMenu("&View")
+        # Only add sidebar toggle (utility tabs are now embedded in center panel)
         view_menu.addAction(self.dock_sidebar.toggleViewAction())
-        view_menu.addAction(self.dock_utility.toggleViewAction())
         view_menu.addSeparator()
 
         self.action_dark_mode = QAction("Dark Mode", self, checkable=True)
