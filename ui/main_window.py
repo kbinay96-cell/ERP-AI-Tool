@@ -521,16 +521,15 @@ class MainWindow(QMainWindow):
     # ------------------------------------------------------------------
 
     def _build_ui(self) -> None:
-        # Central panel now embeds the utility tabs (Files / Agent Logs / Apply Code)
-        # so we only add the left sidebar as a dock. This produces a single cohesive
-        # main window where chat and agent/tools live in one view.
         self.setCentralWidget(self._build_center_panel())
 
         self.dock_sidebar = self._build_sidebar_dock()
         self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.dock_sidebar)
 
-        # Do not create a right utility dock anymore; utility tabs are embedded
-        # inside the center panel below the chat area.
+        # Restore the right utility dock (Files / Agent Logs / Apply Code)
+        self.dock_utility = self._build_utility_dock()
+        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.dock_utility)
+
         self._build_menu_bar()
         self.statusBar().showMessage("Ready. Select a project folder to begin.")
 
@@ -588,31 +587,9 @@ class MainWindow(QMainWindow):
         root_layout.setContentsMargins(16, 16, 16, 16)
         root_layout.setSpacing(12)
 
-        # Top bar and status area remain at the top
         root_layout.addWidget(self._build_top_bar())
         root_layout.addWidget(self._build_status_area())
-
-        # Use a vertical splitter so the chat area occupies the top region
-        # and utility tabs (Files / Agent Logs / Apply Code) live below it.
-        splitter = QSplitter(Qt.Orientation.Vertical)
-        splitter.setChildrenCollapsible(False)
-
-        chat_widget = self._build_chat_area()
-        splitter.addWidget(chat_widget)
-
-        # Utility tabs are now embedded inside the center panel (bottom of splitter)
-        tabs = QTabWidget()
-        tabs.setObjectName("UtilityTabs")
-        tabs.addTab(self._build_files_tab(), "Files")
-        tabs.addTab(self._build_agent_logs_tab(), "Agent Logs")
-        tabs.addTab(self._build_apply_code_tab(), "Apply Code")
-        splitter.addWidget(tabs)
-
-        # Make chat area take more space by default
-        splitter.setStretchFactor(0, 3)
-        splitter.setStretchFactor(1, 1)
-
-        root_layout.addWidget(splitter, stretch=1)
+        root_layout.addWidget(self._build_chat_area(), stretch=1)
         root_layout.addLayout(self._build_composer_row())
 
         return container
