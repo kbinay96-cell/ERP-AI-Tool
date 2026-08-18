@@ -56,8 +56,10 @@ from ui.chat_formatter import (
     get_chat_area_background,
 )
 from ui.query_worker import MAX_HISTORY_MESSAGES, QueryWorker
+from ui.intent_router import detect_intent, IntentType
 from ui.scan_worker import ScanWorker
 from code_block_applier import apply_all_blocks
+from apply_code_rules import APPLY_CODE_RULES_TEXT
 # OpenHands Agent ko safely import karte hain (agar environment mein na ho toh bhi UI crash na ho)
 try:
     from ui.openhands_worker import OpenHandsWorker
@@ -667,6 +669,10 @@ class MainWindow(QMainWindow):
         session_row.addStretch(1)
 
         self.lbl_model_status = QLabel("Model: Auto (Groq → OpenRouter)")
+        self.lbl_agent_indicator = QLabel("✅ Agent Idle")
+        self.lbl_agent_indicator.setObjectName("SubtitleLabel")
+        self.lbl_agent_indicator.setStyleSheet("color: #66BB6A; font-weight: bold;")
+        session_row.addWidget(self.lbl_agent_indicator)
         self.lbl_model_status.setObjectName("SubtitleLabel")
         session_row.addWidget(self.lbl_model_status)
 
@@ -705,12 +711,14 @@ class MainWindow(QMainWindow):
         row = QHBoxLayout()
         row.setSpacing(8)
 
+        # 📎 Attach button
         self.btn_attach_file = QPushButton("📎")
         self.btn_attach_file.setObjectName("IconButton")
         self.btn_attach_file.setFixedWidth(38)
         self.btn_attach_file.setToolTip("Attach a file path into your question")
         row.addWidget(self.btn_attach_file)
 
+        # 📝 Input box
         self.txt_query_input = QLineEdit()
         self.txt_query_input.setObjectName("ComposerInput")
         self.txt_query_input.setPlaceholderText(
@@ -719,60 +727,25 @@ class MainWindow(QMainWindow):
         self.txt_query_input.setClearButtonEnabled(True)
         row.addWidget(self.txt_query_input, stretch=1)
 
+        # 📤 Send button
         self.btn_send_query = QPushButton("Send")
         self.btn_send_query.setObjectName("PrimaryButton")
         self.btn_send_query.setMinimumWidth(88)
         row.addWidget(self.btn_send_query)
 
-        # --- Agent control buttons moved next to Send button (single-window mode) ---
+        # Agent buttons ab hidden hain - sab chat se hota hai (Unified Agentic Chat)
+        # Ye buttons sirf internal references ke liye rakhte hain, UI mein nahi dikhenge
         self.btn_start_agent = QPushButton("▶ Start Agent")
-        self.btn_start_agent.setToolTip("Chat box ke text ko instruction maan kar agent start karega")
-        self.btn_start_agent.setEnabled(_OPENHANDS_AVAILABLE)
-        self.btn_start_agent.setStyleSheet("""
-            QPushButton { 
-                background-color: #4f7cff; color: white; font-weight: bold; 
-                border: none; padding: 6px 12px; border-radius: 4px; 
-            }
-            QPushButton:disabled { background-color: #2A2A38; color: #666666; }
-            QPushButton:hover:!disabled { background-color: #658cff; }
-        """)
-        row.addWidget(self.btn_start_agent)
-
+        self.btn_start_agent.setVisible(False)
+        
         self.btn_approve_agent = QPushButton("✅ Approve")
-        self.btn_approve_agent.setEnabled(False)
-        self.btn_approve_agent.setStyleSheet("""
-            QPushButton { 
-                background-color: #2E7D32; color: white; font-weight: bold; 
-                border: none; padding: 6px 12px; border-radius: 4px; 
-            }
-            QPushButton:disabled { background-color: #2A2A38; color: #666666; }
-            QPushButton:hover:!disabled { background-color: #388E3C; }
-        """)
-        row.addWidget(self.btn_approve_agent)
-
+        self.btn_approve_agent.setVisible(False)
+        
         self.btn_reject_agent = QPushButton("❌ Reject")
-        self.btn_reject_agent.setEnabled(False)
-        self.btn_reject_agent.setStyleSheet("""
-            QPushButton { 
-                background-color: #C62828; color: white; font-weight: bold; 
-                border: none; padding: 6px 12px; border-radius: 4px; 
-            }
-            QPushButton:disabled { background-color: #2A2A38; color: #666666; }
-            QPushButton:hover:!disabled { background-color: #D32F2F; }
-        """)
-        row.addWidget(self.btn_reject_agent)
-
+        self.btn_reject_agent.setVisible(False)
+        
         self.btn_kill_agent = QPushButton("⏹ Kill")
-        self.btn_kill_agent.setEnabled(False)
-        self.btn_kill_agent.setStyleSheet("""
-            QPushButton { 
-                background-color: #E65100; color: white; font-weight: bold; 
-                border: none; padding: 6px 12px; border-radius: 4px; 
-            }
-            QPushButton:disabled { background-color: #2A2A38; color: #666666; }
-            QPushButton:hover:!disabled { background-color: #F57C00; }
-        """)
-        row.addWidget(self.btn_kill_agent)
+        self.btn_kill_agent.setVisible(False)
 
         return row
 
@@ -799,12 +772,8 @@ class MainWindow(QMainWindow):
         hint = QLabel(
             "Claude se mila hua structured code-block yahan paste karo aur "
             "'Apply' dabao. Koi AI/API call nahi hoti — seedha file likhi jaati hai.\n\n"
-            "Format:\n"
-            "### FILE: path/to/file.py\n"
-            "### ACTION: replace (ya create)\n"
-            "<<<CODE_START>>>\n"
-            "...code...\n"
-            "<<<CODE_END>>>"
+            "3 modes: naya/poora file, function naam se replace, ya chhoti si "
+            "line replace. Neeche '📜 Show Format Rules' se poora format chat mein dekho."
         )
         hint.setObjectName("SubtitleLabel")
         hint.setWordWrap(True)
@@ -813,13 +782,25 @@ class MainWindow(QMainWindow):
         self.txt_apply_code_input = QTextEdit()
         self.txt_apply_code_input.setObjectName("AgentLogs")
         self.txt_apply_code_input.setPlaceholderText(
-            "### FILE: ui/example.py\n### ACTION: replace\n<<<CODE_START>>>\n...\n<<<CODE_END>>>"
+            "FILE: ui/example.py\n#start#\n...\n#end#"
         )
         layout.addWidget(self.txt_apply_code_input, stretch=1)
 
+        row_buttons = QHBoxLayout()
+
         self.btn_apply_code = QPushButton("📥 Apply Code Block(s)")
         self.btn_apply_code.setObjectName("PrimaryButton")
-        layout.addWidget(self.btn_apply_code)
+        row_buttons.addWidget(self.btn_apply_code)
+
+        self.btn_show_rules = QPushButton("📜 Show Format Rules")
+        self.btn_show_rules.setObjectName("IconButton")
+        self.btn_show_rules.setToolTip(
+            "Format rules ek click mein chat mein dikhao — copy karke naye "
+            "session/AI ko bhi bata sakte ho."
+        )
+        row_buttons.addWidget(self.btn_show_rules)
+
+        layout.addLayout(row_buttons)
 
         self.txt_apply_code_results = QTextEdit()
         self.txt_apply_code_results.setObjectName("AgentLogs")
@@ -907,6 +888,7 @@ class MainWindow(QMainWindow):
         self.btn_load_blueprint.clicked.connect(self._on_load_blueprint_clicked)
         self.btn_progress.clicked.connect(self._on_progress_clicked)
         self.btn_apply_code.clicked.connect(self._on_apply_code_clicked)
+        self.btn_show_rules.clicked.connect(self._on_show_rules_clicked)
         
 
         self.txt_query_input.returnPressed.connect(self._on_send_or_stop_clicked)
@@ -983,18 +965,34 @@ class MainWindow(QMainWindow):
             self._rerender_chat_log()
 
     def _on_copy_link_clicked(self, url) -> None:
-        """Message ke neeche 📋 Copy link click → clipboard mein copy."""
+        """Chat ke andar ke links handle karo - copy + agent approve/reject."""
         href = url.toString()
-        if not href.startswith("copy:"):
+
+        # Agent approve/reject links
+        if href.startswith("agent:"):
+            action = href.split(":")[1]
+            if action == "approve":
+                self._append_message("system", "✅ Approved! Agent continue kar raha hai...")
+                self._agent_waiting_for_user = False
+                self._agent_pending_detail = None
+                self._on_approve_agent_clicked()
+            elif action == "reject":
+                self._append_message("system", "❌ Rejected. Agent ko bata diya gaya.")
+                self._agent_waiting_for_user = False
+                self._agent_pending_detail = None
+                self._on_reject_agent_clicked()
             return
-        try:
-            index = int(href.split(":")[1])
-        except (ValueError, IndexError):
-            return
-        if index < len(self._display_messages):
-            _role, text = self._display_messages[index]
-            QApplication.clipboard().setText(text)
-            self.statusBar().showMessage("📋 Message copied to clipboard", 3000)
+
+        # Copy links (existing functionality)
+        if href.startswith("copy:"):
+            try:
+                index = int(href.split(":")[1])
+            except (ValueError, IndexError):
+                return
+            if index < len(self._display_messages):
+                _role, text = self._display_messages[index]
+                QApplication.clipboard().setText(text)
+                self.statusBar().showMessage("📋 Message copied to clipboard", 3000)
 
     # ------------------------------------------------------------------
     # Session sidebar
@@ -1448,43 +1446,64 @@ class MainWindow(QMainWindow):
             self._active_session_id = self.storage.create_session("New Chat")
             self._reload_sessions_list(select_session_id=self._active_session_id)
 
-        # Append user message to chat and clear input (keeps conversation consistent)
+        # Append user message to chat and clear input
         self._append_message("user", query_text)
         self.txt_query_input.clear()
 
-        # --- If agent is waiting for approval, allow inline chat response ---
-        lower_q = query_text.lower()
-        if self._agent_waiting_for_user and lower_q in ("approve", "yes", "y"):
-            self._append_message("system", "Processing your approval...")
-            # clear waiting flag before invoking
-            self._agent_waiting_for_user = False
-            self._agent_pending_detail = None
-            self._on_approve_agent_clicked()
-            return
-        if self._agent_waiting_for_user and lower_q in ("reject", "no", "n"):
-            self._append_message("system", "Processing your rejection...")
-            self._agent_waiting_for_user = False
-            self._agent_pending_detail = None
-            self._on_reject_agent_clicked()
-            return
+        # --- Priority 1: Agent waiting hai to approval/rejection/kill check ---
+        if self._agent_waiting_for_user:
+            result = detect_intent(query_text, agent_waiting=True)
+            if result.intent == IntentType.APPROVAL:
+                self._append_message("system", "✅ Approved! Agent continue kar raha hai...")
+                self._agent_waiting_for_user = False
+                self._agent_pending_detail = None
+                self._on_approve_agent_clicked()
+                return
+            elif result.intent == IntentType.REJECTION:
+                self._append_message("system", "❌ Rejected. Agent ko bata diya gaya.")
+                self._agent_waiting_for_user = False
+                self._agent_pending_detail = None
+                self._on_reject_agent_clicked()
+                return
+            elif result.intent == IntentType.KILL:
+                self._append_message("system", "⏹ Agent kill kar diya gaya.")
+                self._agent_waiting_for_user = False
+                self._agent_pending_detail = None
+                self._on_kill_agent_clicked()
+                return
 
-        # --- /agent command to start the agent from chat ---
+        # --- Priority 2: /agent command ---
         if query_text.startswith("/agent"):
             instruction = query_text[len("/agent"):].strip()
             if not instruction:
                 self._append_message("system", "Usage: /agent <instruction>")
                 return
-            # Pre-fill the input with the instruction and reuse existing start logic
-            self.txt_query_input.setText(instruction)
-            # Start agent (this will read txt_query_input)
-            self._on_start_agent_clicked()
+            self._start_agent_from_chat(instruction)
             return
 
-        # If this was a tool-routing JSON or other tool command, handle it
+        # --- Priority 3: Blueprint commands ---
+        if self._handle_blueprint_command(query_text):
+            return
+
+        # --- Priority 4: Tool routing (JSON payloads) ---
         if self._try_route_tool(query_text):
             return
 
-        # Normal LLM query path (existing behavior)
+        # --- Priority 5: SMART ROUTER - Task vs Question ---
+        intent_result = detect_intent(query_text, agent_waiting=False)
+
+        if intent_result.intent == IntentType.TASK:
+            # Task detect hua -> Agent mode
+            self._append_message(
+                "system",
+                f"🤖 **Task detected!** (confidence: {intent_result.confidence:.0%})\n"
+                f"Reason: {intent_result.reason}\n"
+                f"Agent start ho raha hai..."
+            )
+            self._start_agent_from_chat(query_text)
+            return
+
+        # --- Default: Question mode - normal chat ---
         self._last_query_text = query_text
         self._set_querying_ui_state(active=True)
 
@@ -1497,6 +1516,57 @@ class MainWindow(QMainWindow):
         self._query_worker.failed.connect(self._on_query_failed)
         self._query_worker.finished.connect(self._on_query_thread_finished)
         self._query_worker.start()
+
+    def _start_agent_from_chat(self, instruction: str) -> None:
+        """
+        Chat se agent start karo - Unified Agentic Chat (T02).
+        User ko alag button dabane ki zaroorat nahi.
+        """
+        if not _OPENHANDS_AVAILABLE:
+            self._append_message(
+                "error",
+                "❌ OpenHands SDK installed nahi hai. Agent mode unavailable."
+            )
+            return
+
+        if self._agent_worker is not None and self._agent_worker.isRunning():
+            self._append_message(
+                "system",
+                "⚠️ Agent pehle se chal raha hai. Wait karein ya 'kill' likhein."
+            )
+            return
+
+        workspace = self._project_root
+        if not workspace:
+            self._append_message(
+                "error",
+                "❌ Pehle 'Select Project' se folder select karein."
+            )
+            return
+
+        # Agent logs mein separator
+        self.txt_agent_logs.append("\n" + "═" * 50)
+        self.txt_agent_logs.append(f"🚀 UNIFIED CHAT → AGENT: {instruction}")
+        self.txt_agent_logs.append(f"📁 Workspace: {workspace}")
+        self.txt_agent_logs.append("═" * 50)
+
+        # Agent worker create karo
+        self._agent_worker = OpenHandsWorker(
+            workspace_path=workspace,
+            user_instruction=instruction,
+            parent=self
+        )
+        self._agent_worker.event_received.connect(self._on_agent_event)
+        self._agent_worker.waiting_for_confirmation.connect(self._on_agent_waiting)
+        self._agent_worker.finished_ok.connect(self._on_agent_finished)
+        self._agent_worker.failed.connect(self._on_agent_failed)
+
+        self.btn_start_agent.setEnabled(False)
+        self.btn_kill_agent.setEnabled(True)
+        self._agent_elapsed_seconds = 0
+        self._agent_tick_timer.start(1000)
+        self._set_agent_status("🔄 Agent Processing... (0s)", "#4f7cff")
+        self._agent_worker.start()
 
     def _on_stop_query_clicked(self) -> None:
         """
@@ -1718,17 +1788,52 @@ class MainWindow(QMainWindow):
             self._refresh_action_states()
 
     def _auto_load_blueprint(self) -> None:
-        """App start hote hi active_blueprint.json auto-detect karo."""
+        """App start hote hi blueprint auto-load + AUTO-SYNC karo."""
         try:
-            from storage.blueprint_storage import get_active_blueprint
+            from storage.blueprint_storage import get_active_blueprint, mark_task_done_by_file
+
             bp = get_active_blueprint()
-            if bp:
-                self.btn_progress.setEnabled(True)
-                title = bp.get("title", "Unknown")
-                tasks_count = len(bp.get("tasks", []))
+            if not bp:
+                return
+
+            self.btn_progress.setEnabled(True)
+            title = bp.get("title", "Unknown")
+            tasks_count = len(bp.get("tasks", []))
+
+            # 🆕 AUTO-SYNC: Har task check karo - file exist hai to done mark karo
+            synced_count = 0
+            project_root = self._project_root or ""
+
+            for task in bp.get("tasks", []):
+                if task.get("status") == "done":
+                    continue  # Already done, skip
+
+                task_file = task.get("file", "")
+                if not task_file:
+                    continue
+
+                # File exist check karo
+                import os
+                full_path = os.path.join(project_root, task_file) if project_root else task_file
+
+                # Relative path se bhi check karo
+                if not os.path.isfile(full_path) and os.path.isfile(task_file):
+                    full_path = task_file
+
+                if os.path.isfile(full_path):
+                    # File exist hai! Task auto-done karo
+                    mark_task_done_by_file(task_file, notes="Auto-synced: file exists")
+                    synced_count += 1
+
+            if synced_count > 0:
                 self.statusBar().showMessage(
-                    f"📋 Blueprint auto-loaded: {title} ({tasks_count} tasks)", 5000
+                    f"📋 Blueprint auto-synced: {synced_count} tasks auto-marked as done!", 5000
                 )
+            else:
+                self.statusBar().showMessage(
+                    f"📋 Blueprint loaded: {title} ({tasks_count} tasks)", 5000
+                )
+
         except Exception:
             pass
             
@@ -1818,6 +1923,7 @@ class MainWindow(QMainWindow):
     # Replace start of method _on_start_agent_clicked with this guarded version
     def _on_start_agent_clicked(self) -> None:
         """Agent start karo - selected project folder mein kaam karega."""
+        # Unified mode: agent sirf chat se start hoga, button hidden hai
         # Guard: OpenHands not installed?
         if not _OPENHANDS_AVAILABLE:
             QMessageBox.warning(
@@ -1935,6 +2041,12 @@ class MainWindow(QMainWindow):
             if self._project_root:
                 self._populate_file_tree(self._project_root)
 
+    def _on_show_rules_clicked(self) -> None:
+        """Apply Code format rules ko chat mein paste karta hai — copy-paste
+        ke liye ready, naye session/AI ko bhi format samjhaane ke liye."""
+        self._append_message("system", APPLY_CODE_RULES_TEXT)
+
+    
     # Chat mein user ye likh sakta hai:
     # "blueprint status" → progress report
     # "blueprint compare" → repo comparison
@@ -1975,21 +2087,22 @@ class MainWindow(QMainWindow):
         return False
 
     def _on_agent_event(self, message: str) -> None:
-        # Route system/router messages into system chat and others as assistant messages.
+        """Agent events ko chat mein dikhao + blueprint auto-update karo."""
         try:
             if message.startswith("[Router]") or message.startswith("[System]"):
-                # show in chat as system message
                 self._append_message("system", message)
             else:
-                # show agent output as assistant message in chat
                 self._append_message("assistant", message)
         except Exception:
-            # defensive: if _append_message fails for some reason, at least append to agent logs
             pass
 
-        # Always keep a full plain-text copy in agent logs for debugging
+        # Agent logs mein bhi dikhao
         if hasattr(self, "txt_agent_logs") and self.txt_agent_logs is not None:
             self.txt_agent_logs.append(message)
+
+        # 🆕 T11: Blueprint Auto-Update
+        # Jab agent file create/edit kare, blueprint task auto-done karo
+        self._try_auto_update_blueprint(message)
     
     def _on_load_blueprint_clicked(self) -> None:
         """Blueprint file load karo - ANY format, ANY language."""
@@ -2045,35 +2158,63 @@ class MainWindow(QMainWindow):
         return ""
 
     def _set_agent_status(self, text: str, color: str) -> None:
-        """Agent status label update karta hai with color."""
+        """Agent status label + session row indicator dono update karo."""
+        # Agent Logs tab ka status label
         self.lbl_agent_status.setText(text)
         self.lbl_agent_status.setStyleSheet(
             f"color: {color}; font-size: 13px; font-weight: bold; padding: 4px 0;"
         )
+
+        # Session row ka indicator bhi update karo
+        if hasattr(self, 'lbl_agent_indicator'):
+            if "Processing" in text or "Working" in text:
+                self.lbl_agent_indicator.setText("🤖 Agent Active")
+                self.lbl_agent_indicator.setStyleSheet("color: #42A5F5; font-weight: bold;")
+            elif "Waiting" in text or "Approval" in text:
+                self.lbl_agent_indicator.setText("⏳ Waiting Approval")
+                self.lbl_agent_indicator.setStyleSheet("color: #FFA726; font-weight: bold;")
+            elif "Finished" in text or "Idle" in text:
+                self.lbl_agent_indicator.setText("✅ Agent Idle")
+                self.lbl_agent_indicator.setStyleSheet("color: #66BB6A; font-weight: bold;")
+            elif "Failed" in text:
+                self.lbl_agent_indicator.setText("❌ Agent Failed")
+                self.lbl_agent_indicator.setStyleSheet("color: #EF5350; font-weight: bold;")
+            else:
+                self.lbl_agent_indicator.setText(text)
+                self.lbl_agent_indicator.setStyleSheet(f"color: {color}; font-weight: bold;")
+
         # Window ke bottom status bar mein bhi dikhao
         self.statusBar().showMessage(text)
 
     def _on_agent_waiting(self, message: str) -> None:
-        # Agent approval required — set internal waiting flag and notify user in chat + agent logs
+        """Agent approval required - chat mein inline buttons dikhao."""
         self._agent_tick_timer.stop()
-        self.txt_agent_logs.append(f"<b style='color:orange;'>⏳ [WAITING FOR APPROVAL]</b>")
-        self.txt_agent_logs.append(f"<b style='color:#FFD54F;'>  → {message}</b>")
+        self.txt_agent_logs.append(f"⏳ [WAITING FOR APPROVAL] {message}")
 
-        # set waiting state
+        # Waiting state set karo
         self._agent_waiting_for_user = True
         self._agent_pending_detail = message
 
-        # Enable UI buttons as before
-        self.btn_approve_agent.setEnabled(True)
-        self.btn_reject_agent.setEnabled(True)
+        # Composer row buttons disable karo (ab chat se hoga)
+        self.btn_approve_agent.setEnabled(False)
+        self.btn_reject_agent.setEnabled(False)
+
         self._set_agent_status("⏳ Waiting for Your Approval", "#FFA726")
 
-        # Also append a clear system message into the chat so user can reply inline ("approve" / "reject")
-        self._append_message(
-            "system",
-            f"⚠️ **Agent Approval Required!**\n\n**Action:** {message}\n\n"
-            "Reply with `approve` or `reject` in the chat to respond, or use the Approve/Reject buttons in the right panel."
+        # Chat mein styled approval box dikhao with clickable links
+        approval_html = (
+            f'<div style="background-color:#2A2A38; padding:12px; '
+            f'border-radius:8px; border-left:4px solid #FFA726;">'
+            f'<b style="color:#FFA726;">⚠️ Agent Approval Required</b><br/>'
+            f'<span style="color:#E8E8ED;">{message}</span><br/><br/>'
+            f'<a href="agent:approve" style="color:#4CAF50; font-weight:bold; '
+            f'font-size:14pt; text-decoration:none;">✅ Approve</a>'
+            f'&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;'
+            f'<a href="agent:reject" style="color:#F44336; font-weight:bold; '
+            f'font-size:14pt; text-decoration:none;">❌ Reject</a>'
+            f'</div>'
         )
+        self.txt_chat_log.append(approval_html)
 
     def _on_approve_agent_clicked(self) -> None:
         if self._agent_worker:
@@ -2114,33 +2255,85 @@ class MainWindow(QMainWindow):
             import threading
             threading.Thread(target=self._agent_worker.kill, daemon=True).start()
 
+    def _try_auto_update_blueprint(self, event_message: str) -> None:
+        """
+        T11: Agent jab file create/edit kare, blueprint task auto-done karo.
+        Event message se file path extract karke blueprint_storage call karo.
+        """
+        try:
+            from storage.blueprint_storage import get_active_blueprint, mark_task_done_by_file
+
+            # Check karo blueprint loaded hai ya nahi
+            bp = get_active_blueprint()
+            if not bp:
+                return
+
+            # File path extract karo event message se
+            file_path = self._extract_path_helper(event_message)
+            if not file_path:
+                return
+
+            # Blueprint mein matching task dhundo aur done mark karo
+            success = mark_task_done_by_file(file_path, notes="Auto-detected by agent")
+            if success:
+                self._append_message(
+                    "system",
+                    f"📋 **Blueprint Auto-Updated!**\n"
+                    f"File `{file_path}` edit hui → matching task 'done' mark ho gaya."
+                )
+                # Progress button bhi enable karo
+                self.btn_progress.setEnabled(True)
+
+        except Exception:
+            pass  # Blueprint update fail hone par agent kaam mat roko
+
     def _on_agent_finished(self, message: str) -> None:
+        """Agent task complete - chat mein natural summary dikhao."""
         self.txt_agent_logs.append(f"\n🎉 DONE: {message}")
         self.txt_agent_logs.append("─" * 50 + "\n")
 
-        if self._last_agent_text:
-            self._append_message("assistant", self._last_agent_text)
-            self._last_agent_text = ""
-        else:
-            self._append_message("system", f"✅ **Agent Task Completed** — {message}")
+        # Chat mein styled completion box dikhao
+        completion_html = (
+            f'<div style="background-color:#1B3A2A; padding:12px; '
+            f'border-radius:8px; border-left:4px solid #4CAF50;">'
+            f'<b style="color:#4CAF50;">✅ Agent Task Completed!</b><br/>'
+            f'<span style="color:#E8E8ED;">{message}</span><br/><br/>'
+            f'<span style="color:#9aa1b5; font-size:10pt;">'
+            f'Agent ne apna kaam poora kiya. '
+            f'Aap follow-up sawal puch sakte hain ya naya task de sakte hain.'
+            f'</span>'
+            f'</div>'
+        )
+        self.txt_chat_log.append(completion_html)
+
+        # Chat history mein bhi add karo (conversation continuity)
+        self._append_message(
+            "system",
+            f"✅ **Agent Task Completed!**\n{message}\n\n"
+            f"Kuch aur chahiye? Naya task likho ya sawal pucho. 👇"
+        )
 
         self._set_agent_status("✅ Agent Finished", "#66BB6A")
         self._cleanup_agent_worker()
 
     def _on_agent_failed(self, message: str) -> None:
-        """Agent failed - error summary chat mein dikhao."""
+        """Agent failed - chat mein friendly error dikhao."""
         self.txt_agent_logs.append(f"<b style='color:red;'>💥 [FAILED] {message}</b>")
-        
-        # ❌ Error summary chat window mein
-        error_summary = (
-            f"❌ **Agent Task Failed!**\n\n"
-            f"**Error:** {message}\n\n"
-            f"Kuch technical problem aa gayi. "
-            f"Aap dobara try kar sakte hain ya task change kar sakte hain."
+
+        # Chat mein styled error box
+        error_html = (
+            f'<div style="background-color:#3A1B1B; padding:12px; '
+            f'border-radius:8px; border-left:4px solid #F44336;">'
+            f'<b style="color:#F44336;">❌ Agent Task Failed</b><br/>'
+            f'<span style="color:#E8E8ED;">{message[:300]}</span><br/><br/>'
+            f'<span style="color:#9aa1b5; font-size:10pt;">'
+            f'💡 Tips: API quota check karo, ya task dobara try karo. '
+            f'"kill" likh kar agent band bhi kar sakte ho.'
+            f'</span>'
+            f'</div>'
         )
-        self._append_message("error", error_summary)
-        
-        # UI state reset
+        self.txt_chat_log.append(error_html)
+
         self._set_agent_status("❌ Agent Failed", "#EF5350")
         self._cleanup_agent_worker()
 
@@ -2172,4 +2365,7 @@ class MainWindow(QMainWindow):
         self.btn_reject_agent.setEnabled(False)
         self.btn_kill_agent.setEnabled(False)
         self._set_agent_status("⚪ Agent Idle", "#9aa1b5")
+        if hasattr(self, 'lbl_agent_indicator'):
+            self.lbl_agent_indicator.setText("✅ Agent Idle")
+            self.lbl_agent_indicator.setStyleSheet("color: #66BB6A; font-weight: bold;")
         self._agent_worker = None

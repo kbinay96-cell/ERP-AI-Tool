@@ -1,3 +1,3 @@
 def greet_user(name):
     print("function-name patch worked!")
-    return f"Hello, {name}! Patched successfully."
+    return f", {name}! Patched successfully."

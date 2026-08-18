@@ -16,6 +16,10 @@ openhands-tools>=0.1.0
 # Web requests (provider testing)
 requests>=2.28.0
 
+# Caretaker Orchestrator (FastAPI backend for code-block apply/preview)
+fastapi>=0.110.0
+uvicorn[standard]>=0.29.0
+
 # Markdown rendering
 markdown>=3.4.0
 

@@ -1,8 +1,8 @@
 PROJECT EXPORT
 ================================================================================
-Generated At : 2026-08-16T09:10:14.894131
+Generated At : 2026-08-18T10:05:05.755747
 Project Root : C:\Users\Medical\Desktop\ERP-AI-Tool
-Total Files  : 46
+Total Files  : 60
 List Only    : False
 ================================================================================
 
@@ -12,6 +12,8 @@ Start_ERP_AI_Tool.bat
 ai_financial_ledger_audit.py
 ai_inventory_allocator.py
 ai_production_job_scheduler.py
+caretaker_gui.py
+caretaker_orchestrator.py
 chroma_memory.py
 code_block_applier.py
 codebase_scanner.py
@@ -22,13 +24,17 @@ llm_router.py
 main.py
 memory_index.py
 purchase_requisition_analyzer.py
+pytest.ini
+requirements-dev.txt
 requirements.txt
 temp_ddg_test.py
 temp_python_version.py
 test_providers.py
 blueprints/active_blueprint.json
 blueprints/erp_ai_tool_blueprint.json
+blueprints/unified_agentic_chat.json
 blueprints/archive/bp_6d6de6e0_20260814_221220.json
+blueprints/archive/bp_9ed8a458_20260817_154950.json
 blueprints/archive/bp_a2c50820_20260814_213227.json
 blueprints/archive/bp_erp_ai_tool_001_20260813_084645.json
 blueprints/archive/bp_erp_ai_tool_001_20260813_200707.json
@@ -38,17 +44,25 @@ blueprints/archive/bp_erp_ai_tool_001_20260813_204314.json
 blueprints/archive/bp_erp_ai_tool_001_20260814_195059.json
 blueprints/archive/bp_erp_ai_tool_001_20260814_213023.json
 blueprints/archive/bp_erp_ai_tool_001_20260814_215106.json
+blueprints/archive/bp_unified_agentic_chat_001_20260818_092349.json
 projects/medical_erp_v2.json
 storage/__init__.py
 storage/blueprint_parser.py
 storage/blueprint_storage.py
 storage/chat_storage.py
 test_output/sample.py
+tests/test_ai_financial_ledger_audit.py
+tests/test_ai_inventory_allocator.py
+tests/test_caretaker_orchestrator.py
+tests/test_chroma_memory_mock.py
+tests/test_code_block_applier.py
+tests/test_unified_chat.py
 tools/repo_reader.py
 tools/web_search.py
 ui/__init__.py
 ui/chat_formatter.py
 ui/dashboard_charts.py
+ui/intent_router.py
 ui/main_window.py
 ui/markdown_renderer.py
 ui/openhands_worker.py
@@ -153,13 +167,22 @@ def run_audit(audit_data: dict) -> dict:
             risk_score += 25
 
         # Rule 3: Off-Hours Posting (11 PM - 5 AM)
+        dt = None
         try:
             dt = datetime.fromisoformat(txn.timestamp)
+        except ValueError:
+            # Best-effort fallback if the timestamp is not strictly ISO-formatted.
+            try:
+                from dateutil import parser
+
+                dt = parser.parse(txn.timestamp)
+            except Exception:
+                dt = None
+
+        if dt is not None:
             if dt.hour >= 23 or dt.hour < 5:
                 flags.append("OFF_HOURS_POSTING")
                 risk_score += 25
-        except ValueError:
-            pass
 
         # Rule 4: Missing Approval for High Value Transactions (>100,000)
         if txn.amount > 100000 and (not txn.approved_by or txn.approved_by.strip() == ""):
@@ -262,7 +285,7 @@ class InventoryPayload(BaseModel):
 
 class WarehouseAnalysis(BaseModel):
     wh_id: str
-    doi: float
+    doi: Optional[float]  # now optional: None indicates 'infinite / not applicable'
     reorder_point: int
     status: str
     action_recommended: Optional[str] = None
@@ -284,9 +307,9 @@ def evaluate_inventory_allocation(input_data: dict) -> dict:
     # State tracking for warehouses to handle dynamic transfers
     wh_state = {}
     for wh in payload.warehouses:
-        # If burn-rate is zero, avoid division by zero and treat DOI as infinite.
+        # If burn-rate is zero, avoid division by zero and treat DOI as not-applicable (None).
         if wh.daily_burn_rate <= 0:
-            doi = math.inf
+            doi = None
             rop = 0  # No expected consumption -> no reorder needed by formula
         else:
             rop = (wh.daily_burn_rate * wh.lead_time_days) + (
@@ -317,8 +340,8 @@ def evaluate_inventory_allocation(input_data: dict) -> dict:
                 analysis_results.append(
                     WarehouseAnalysis(
                         wh_id=wh.wh_id,
-                        doi=float(doi) if doi != math.inf else float("inf"),
-                        reorder_point=rop,
+                        doi=None,
+                        reorder_point=int(rop),
                         status="STOCK_ANOMALY",
                         action_recommended="INVESTIGATE",
                         source_wh=None,
@@ -329,8 +352,8 @@ def evaluate_inventory_allocation(input_data: dict) -> dict:
                 analysis_results.append(
                     WarehouseAnalysis(
                         wh_id=wh.wh_id,
-                        doi=float(doi) if doi != math.inf else float("inf"),
-                        reorder_point=rop,
+                        doi=None,
+                        reorder_point=int(rop),
                         status="OK",
                         action_recommended=None,
                         source_wh=None,
@@ -347,7 +370,7 @@ def evaluate_inventory_allocation(input_data: dict) -> dict:
             surplus_candidates = [
                 (w_id, data)
                 for w_id, data in wh_state.items()
-                if w_id != wh.wh_id and data["doi"] is not None and data["doi"] != math.inf and data["doi"] > 10
+                if w_id != wh.wh_id and data["doi"] is not None and data["doi"] > 10
             ]
 
             if surplus_candidates:
@@ -370,13 +393,13 @@ def evaluate_inventory_allocation(input_data: dict) -> dict:
                             source_data["current_stock"] / source_data["config"].daily_burn_rate, 2
                         )
                     else:
-                        source_data["doi"] = math.inf
+                        source_data["doi"] = None
 
                     analysis_results.append(
                         WarehouseAnalysis(
                             wh_id=wh.wh_id,
                             doi=doi,
-                            reorder_point=rop,
+                            reorder_point=int(rop),
                             status="STOCKOUT_RISK",
                             action_recommended="TRANSFER",
                             source_wh=source_id,
@@ -390,7 +413,7 @@ def evaluate_inventory_allocation(input_data: dict) -> dict:
                 WarehouseAnalysis(
                     wh_id=wh.wh_id,
                     doi=doi,
-                    reorder_point=rop,
+                    reorder_point=int(rop),
                     status="STOCKOUT_RISK",
                     action_recommended="PURCHASE_ORDER",
                     source_wh=None,
@@ -402,7 +425,7 @@ def evaluate_inventory_allocation(input_data: dict) -> dict:
                 WarehouseAnalysis(
                     wh_id=wh.wh_id,
                     doi=doi,
-                    reorder_point=rop,
+                    reorder_point=int(rop),
                     status="OK",
                     action_recommended=None,
                     source_wh=None,
@@ -626,34 +649,304 @@ if __name__ == "__main__":
 
 
 ================================================================================
+FILE: caretaker_gui.py
+================================================================================
+
+﻿"""
+caretaker_gui.py
+
+Upgraded PyQt6 Single-Window GUI for Medical ERP v2 Autonomous Caretaker.
+Includes Clear/Reset buttons, input state auto-reset, and button disabling safety.
+"""
+import sys
+import requests
+from PyQt6.QtWidgets import (
+    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
+    QTextEdit, QPushButton, QLabel, QSplitter, QMessageBox, QLineEdit
+)
+from PyQt6.QtCore import Qt
+
+
+class CaretakerGUI(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("ERP-AI Caretaker - Single Window Patch Dashboard")
+        self.resize(1100, 700)
+        self.init_ui()
+
+    def init_ui(self):
+        main_widget = QWidget()
+        self.setCentralWidget(main_widget)
+        main_layout = QVBoxLayout(main_widget)
+
+        # Server URL bar
+        url_layout = QHBoxLayout()
+        url_layout.addWidget(QLabel("Orchestrator URL:"))
+        self.url_input = QLineEdit("http://127.0.0.1:8000")
+        url_layout.addWidget(self.url_input)
+        
+        # Clear All Button in Top Bar
+        self.btn_clear = QPushButton("Clear All / New Patch")
+        self.btn_clear.setStyleSheet("background-color: #f44336; color: white; font-weight: bold; padding: 4px 10px;")
+        self.btn_clear.clicked.connect(self.clear_all)
+        url_layout.addWidget(self.btn_clear)
+
+        main_layout.addLayout(url_layout)
+
+        # Splitter for Text Areas
+        splitter = QSplitter(Qt.Orientation.Horizontal)
+
+        # Left Panel: Patch Input
+        left_widget = QWidget()
+        left_layout = QVBoxLayout(left_widget)
+        left_layout.addWidget(QLabel("<b>1. Paste Code Blocks / Patch Content:</b>"))
+        self.patch_input = QTextEdit()
+        self.patch_input.setPlaceholderText("Paste markdown code blocks or unified diff patches here...")
+        self.patch_input.textChanged.connect(self.on_text_changed)
+        left_layout.addWidget(self.patch_input)
+        splitter.addWidget(left_widget)
+
+        # Right Panel: Preview & Test Results Output
+        right_widget = QWidget()
+        right_layout = QVBoxLayout(right_widget)
+        right_layout.addWidget(QLabel("<b>2. Preview Diff / Execution Logs:</b>"))
+        self.log_output = QTextEdit()
+        self.log_output.setReadOnly(True)
+        right_layout.addWidget(self.log_output)
+        splitter.addWidget(right_widget)
+
+        main_layout.addWidget(splitter)
+
+        # Action Buttons
+        btn_layout = QHBoxLayout()
+        
+        # Highlighted Preview Button
+        self.btn_preview = QPushButton("🔍 Preview Patch Diff")
+        self.btn_preview.setStyleSheet("background-color: #ff9800; color: white; font-weight: bold; padding: 8px;")
+        self.btn_preview.clicked.connect(self.preview_diff)
+        btn_layout.addWidget(self.btn_preview)
+
+        # Apply Button (Active state styled)
+        self.btn_apply = QPushButton("🚀 Apply & Run Pytest Sandbox")
+        self.btn_apply.setStyleSheet("background-color: #2b78e4; color: white; font-weight: bold; padding: 8px;")
+        self.btn_apply.clicked.connect(self.apply_and_run)
+        btn_layout.addWidget(self.btn_apply)
+
+        main_layout.addLayout(btn_layout)
+
+    def on_text_changed(self):
+        # Enable Apply & Preview buttons when text is modified or new text is pasted
+        if self.patch_input.toPlainText().strip():
+            self.btn_apply.setEnabled(True)
+            self.btn_apply.setStyleSheet("background-color: #2b78e4; color: white; font-weight: bold; padding: 8px;")
+            self.btn_preview.setEnabled(True)
+        else:
+            self.btn_apply.setEnabled(False)
+
+    def clear_all(self):
+        self.patch_input.clear()
+        self.log_output.clear()
+        self.btn_apply.setEnabled(True)
+        self.btn_apply.setStyleSheet("background-color: #2b78e4; color: white; font-weight: bold; padding: 8px;")
+
+    def preview_diff(self):
+        text = self.patch_input.toPlainText().strip()
+        if not text:
+            QMessageBox.warning(self, "Input Error", "Please paste some code blocks first.")
+            return
+
+        base_url = self.url_input.text().rstrip("/")
+        try:
+            resp = requests.post(f"{base_url}/preview_code_blocks", json={"raw_text": text})
+            if resp.status_code == 200:
+                data = resp.json()
+                self.log_output.clear()
+                self.log_output.append("=== DIFF PREVIEW ===\n")
+                for item in data:
+                    self.log_output.append(f"File: {item.get('file_path')}\n{item.get('diff')}\n{'-'*40}")
+            else:
+                self.log_output.setText(f"Error ({resp.status_code}): {resp.text}")
+        except Exception as e:
+            self.log_output.setText(f"Connection Failed: {e}\nEnsure caretaker_orchestrator is running!")
+
+    def apply_and_run(self):
+        text = self.patch_input.toPlainText().strip()
+        if not text:
+            QMessageBox.warning(self, "Input Error", "Please paste some code blocks first.")
+            return
+
+        base_url = self.url_input.text().rstrip("/")
+        try:
+            resp = requests.post(
+                f"{base_url}/apply_and_run_sandbox",
+                json={"raw_text": text, "pytest_args": "-q"}
+            )
+            if resp.status_code == 200:
+                data = resp.json()
+                self.log_output.clear()
+                self.log_output.append("=== APPLY RESULTS ===")
+                for r in data.get("apply_results", []):
+                    self.log_output.append(str(r))
+                
+                pytest_res = data.get("pytest")
+                if pytest_res:
+                    self.log_output.append("\n=== PYTEST SANDBOX EXECUTION ===")
+                    self.log_output.append(f"Exit Code: {pytest_res.get('returncode')}")
+                    self.log_output.append(pytest_res.get("stdout") or "")
+                    self.log_output.append(pytest_res.get("stderr") or "")
+
+                # Deactivate / Disable Apply Button after successful execution
+                self.btn_apply.setEnabled(False)
+                self.btn_apply.setStyleSheet("background-color: #cccccc; color: #666666; font-weight: bold; padding: 8px;")
+            else:
+                self.log_output.setText(f"Error ({resp.status_code}): {resp.text}")
+        except Exception as e:
+            self.log_output.setText(f"Connection Failed: {e}\nEnsure caretaker_orchestrator is running!")
+
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    gui = CaretakerGUI()
+    gui.show()
+    sys.exit(app.exec())
+
+
+================================================================================
+FILE: caretaker_orchestrator.py
+================================================================================
+
+﻿"""
+caretaker_orchestrator.py
+
+FastAPI single-window orchestrator for the Medical ERP v2 caretaker.
+
+Endpoints:
+- POST /preview_code_blocks
+- POST /apply_and_run_sandbox
+
+Security: intended for local/trusted usage only.
+"""
+from __future__ import annotations
+
+import difflib
+import os
+import shlex
+import subprocess
+from dataclasses import asdict, is_dataclass
+from pathlib import Path
+from typing import List, Optional
+
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+
+from code_block_applier import parse_code_blocks, apply_all_blocks
+
+app = FastAPI(title="ERP-AI Caretaker Orchestrator (Medical ERP v2)")
+
+
+class RawRequest(BaseModel):
+    raw_text: str
+    project_root: Optional[str] = "."
+
+
+class PreviewItem(BaseModel):
+    file_path: str
+    diff: str
+
+
+@app.post("/preview_code_blocks", response_model=List[PreviewItem])
+def preview_code_blocks(req: RawRequest):
+    root = Path(req.project_root or ".").resolve()
+    if not root.exists() or not root.is_dir():
+        raise HTTPException(status_code=400, detail="project_root does not exist")
+
+    blocks = parse_code_blocks(req.raw_text)
+    if not blocks:
+        raise HTTPException(status_code=400, detail="No code blocks parsed from input")
+
+    previews: List[PreviewItem] = []
+    for b in blocks:
+        target = (root / b.file_path).resolve()
+        try:
+            target.relative_to(root)
+        except Exception:
+            raise HTTPException(status_code=400, detail=f"Invalid target path: {b.file_path}")
+
+        existing_text = ""
+        if target.exists():
+            existing_text = target.read_text(encoding="utf-8")
+        new_text = b.content
+
+        diff_lines = difflib.unified_diff(
+            existing_text.splitlines(keepends=True),
+            new_text.splitlines(keepends=True),
+            fromfile=str(target),
+            tofile=str(target),
+            lineterm="",
+        )
+        diff_str = "".join(diff_lines)
+        previews.append(PreviewItem(file_path=b.file_path, diff=diff_str))
+
+    return previews
+
+
+class ApplyAndRunRequest(BaseModel):
+    raw_text: str
+    project_root: Optional[str] = "."
+    pytest_args: Optional[str] = ""
+
+
+def _to_dict(obj):
+    if is_dataclass(obj):
+        return asdict(obj)
+    if hasattr(obj, "__dict__"):
+        return vars(obj)
+    if isinstance(obj, dict):
+        return obj
+    return str(obj)
+
+
+@app.post("/apply_and_run_sandbox")
+def apply_and_run_sandbox(req: ApplyAndRunRequest):
+    root = Path(req.project_root or ".").resolve()
+    if not root.exists() or not root.is_dir():
+        raise HTTPException(status_code=400, detail="project_root does not exist")
+
+    apply_results = apply_all_blocks(str(root), req.raw_text)
+
+    pytest_args = (req.pytest_args or "").strip()
+    if pytest_args:
+        cmd = f"pytest {pytest_args} -q"
+    else:
+        return {"apply_results": [_to_dict(r) for r in apply_results], "pytest": None}
+
+    try:
+        proc = subprocess.run(
+            shlex.split(cmd), cwd=str(root), capture_output=True, text=True, timeout=300
+        )
+    except subprocess.TimeoutExpired:
+        raise HTTPException(status_code=500, detail="pytest timed out")
+
+    return {
+        "apply_results": [_to_dict(r) for r in apply_results],
+        "pytest": {
+            "returncode": proc.returncode,
+            "stdout": proc.stdout,
+            "stderr": proc.stderr,
+        },
+    }
+
+
+================================================================================
 FILE: chroma_memory.py
 ================================================================================
 
 """
 chroma_memory.py
 
-Memory/Index Layer - Option B (Local ChromaDB, semantic search)
----------------------------------------------------------
-Purpose:
-    Same goal as memory_index.py (persist codebase understanding),
-    but instead of plain keyword matching, this allows MEANING-based
-    search - e.g. searching "how does BS date conversion work" will
-    find engines/date_engine.py even if those exact words are not
-    in the code, because it compares MEANING (via embeddings), not
-    exact text.
-
-HONESTY NOTE ON "FREE + OFFLINE":
-    - ChromaDB itself: 100% local, no API, no cost, runs entirely
-      on your machine (stores data in a local folder).
-    - The embedding model (sentence-transformers, e.g. "all-MiniLM-L6-v2"):
-      downloaded ONCE from Hugging Face (~80MB, free, no login needed).
-      After that first download, it runs 100% offline with zero API
-      calls and zero cost, forever. If you have literally no internet
-      ever (not even once), use memory_index.py (Option A) instead,
-      which needs nothing at all.
-
-Install once:
-    pip install chromadb sentence-transformers
+Local ChromaDB semantic memory layer. Defensive access changes made to avoid
+KeyError when collection.get() returns unexpected shapes in different chromadb
+versions.
 """
 
 from __future__ import annotations
@@ -728,7 +1021,8 @@ class ChromaMemory:
         summaries = scan_project(project_root)
 
         # Clear existing entries for a clean rebuild.
-        existing_ids = self._collection.get()["ids"]
+        existing = self._collection.get() or {}
+        existing_ids = existing.get("ids", [])
         if existing_ids:
             self._collection.delete(ids=existing_ids)
 
@@ -749,11 +1043,15 @@ class ChromaMemory:
 
     def update_index_incremental(self, project_root: str) -> dict:
         """Only re-embeds files that changed since the last index build."""
+        # inside update_index_incremental(...)
         summaries = scan_project(project_root)
-        existing = self._collection.get()
+        existing = self._collection.get() or {}
+        existing_ids = existing.get("ids", [])
+        existing_metas = existing.get("metadatas", [])
+
         existing_hashes = {
-            file_id: meta.get("file_hash")
-            for file_id, meta in zip(existing["ids"], existing["metadatas"])
+            file_id: meta.get("file_hash") if isinstance(meta, dict) else None
+            for file_id, meta in zip(existing_ids, existing_metas)
         }
 
         to_upsert_docs, to_upsert_ids, to_upsert_meta = [], [], []
@@ -776,7 +1074,7 @@ class ChromaMemory:
                 documents=to_upsert_docs, ids=to_upsert_ids, metadatas=to_upsert_meta
             )
 
-        removed_ids = [fid for fid in existing["ids"] if fid not in current_ids]
+        removed_ids = [fid for fid in existing.get("ids", []) if fid not in current_ids]
         if removed_ids:
             self._collection.delete(ids=removed_ids)
 
@@ -795,11 +1093,11 @@ class ChromaMemory:
         results = self._collection.query(query_texts=[query], n_results=top_k)
 
         output = []
-        for i in range(len(results["ids"][0])):
+        for i in range(len(results.get("ids", [[]])[0])):
             output.append({
-                "file": results["ids"][0][i],
-                "relevance_score": results["distances"][0][i] if results.get("distances") else None,
-                "summary": results["documents"][0][i],
+                "file": results.get("ids", [[]])[0][i],
+                "relevance_score": results.get("distances", [[]])[0][i] if results.get("distances") else None,
+                "summary": results.get("documents", [[]])[0][i],
             })
         return output
 
@@ -854,13 +1152,15 @@ class ApplyResult:
     backup_path: Optional[str] = None
 
 
+# Make the pattern resilient to both LF and CRLF line endings and to minor spacing.
+# Anchor markers to line starts and use MULTILINE to avoid accidental mid-line matches.
 _BLOCK_PATTERN = re.compile(
-    r"###\s*FILE:\s*(?P<file>.+?)\s*\n"
-    r"###\s*ACTION:\s*(?P<action>replace|create)\s*\n"
-    r"<<<CODE_START>>>\s*\n"
+    r"^\s*###\s*FILE:\s*(?P<file>.+?)\s*\r?\n"
+    r"^\s*###\s*ACTION:\s*(?P<action>replace|create)\s*\r?\n"
+    r"^\s*<<<CODE_START>>>\s*\r?\n"
     r"(?P<content>.*?)"
-    r"\n?<<<CODE_END>>>",
-    re.DOTALL | re.IGNORECASE,
+    r"\r?\n?^\s*<<<CODE_END>>>",
+    re.DOTALL | re.IGNORECASE | re.MULTILINE,
 )
 
 
@@ -998,12 +1298,12 @@ def apply_all_blocks(project_root: str, raw_text: str) -> list[ApplyResult]:
 
 if __name__ == "__main__":
     sample = """
-### FILE: test_output/sample.py
-### ACTION: create
-<<<CODE_START>>>
-print("hello from applied code block")
-<<<CODE_END>>>
-"""
+ ### FILE: test_output/sample.py
+ ### ACTION: create
+ <<<CODE_START>>>
+ print("hello from applied code block")
+ <<<CODE_END>>>
+ """
     results = apply_all_blocks(".", sample)
     for r in results:
         print(r.message)
@@ -10178,7 +10478,7 @@ _MODEL_LIST = [
     {
         "model_name": "groq-primary",
         "litellm_params": {
-            "model": "groq/llama-3.3-70b-versatile",
+            "model": "groq/llama-3.1-70b-versatile",
             "api_key": os.getenv("GROQ_API_KEY"),
         },
     },
@@ -10820,6 +11120,28 @@ if __name__ == "__main__":
 
 
 ================================================================================
+FILE: pytest.ini
+================================================================================
+
+[pytest]
+minversion = 7.0
+addopts = -q
+testpaths = tests
+
+
+================================================================================
+FILE: requirements-dev.txt
+================================================================================
+
+# Dev / test dependencies
+pytest>=7.0
+pytest-mock>=3.10
+mypy>=1.10
+ruff>=0.12.0
+black>=23.1.0
+
+
+================================================================================
 FILE: requirements.txt
 ================================================================================
 
@@ -10844,7 +11166,11 @@ requests>=2.28.0
 # Markdown rendering
 markdown>=3.4.0
 
-# Semantic Search (Optional - ChromaDB)
+# Data Models & Utilities
+pydantic>=2.0,<3
+python-dateutil>=2.8.2
+
+# Semantic Search (ChromaDB)
 chromadb>=0.4.22
 sentence-transformers>=2.2.2
 
@@ -11029,155 +11355,141 @@ FILE: blueprints/active_blueprint.json
 ================================================================================
 
 {
-  "blueprint_id": "bp_9ed8a458",
-  "title": "Chat Application Enhancement",
-  "created_at": "2026-08-14",
-  "source_file": "table-f7b7b353-3557-4a79-a38c-a2baef302c4e.csv",
+  "blueprint_id": "bp_unified_agentic_chat_001",
+  "title": "Unified Agentic Chat - Do Modes Se Ek Conversation",
+  "created_at": "2026-08-18",
+  "source_file": "unified_agentic_chat.json",
   "status": "in_progress",
-  "modules": [
-    {
-      "name": "General",
-      "tasks": [
-        {
-          "id": "T01",
-          "title": "Implement Top bar buttons functionality",
-          "expected_file": "",
-          "expected_function": ""
-        },
-        {
-          "id": "T02",
-          "title": "Design Session row with required details",
-          "expected_file": "",
-          "expected_function": ""
-        },
-        {
-          "id": "T03",
-          "title": "Increase chat height by compacting top bar",
-          "expected_file": "",
-          "expected_function": ""
-        },
-        {
-          "id": "T04",
-          "title": "Develop Drag & Drop blueprint feature",
-          "expected_file": "",
-          "expected_function": ""
-        },
-        {
-          "id": "T05",
-          "title": "Enhance app to accept any file format",
-          "expected_file": "",
-          "expected_function": ""
-        },
-        {
-          "id": "T06",
-          "title": "Display live date and time in status bar",
-          "expected_file": "",
-          "expected_function": ""
-        },
-        {
-          "id": "T07",
-          "title": "Implement one-click session copy feature",
-          "expected_file": "",
-          "expected_function": ""
-        },
-        {
-          "id": "T08",
-          "title": "Remove unnecessary buttons from right panel",
-          "expected_file": "",
-          "expected_function": ""
-        }
-      ]
-    }
-  ],
+  "modules": [],
   "tasks": [
     {
-      "id": "T001",
-      "title": "Implement Top bar buttons functionality",
-      "file": "",
-      "expected_function": "",
-      "module": "General",
-      "status": "pending",
-      "completed_at": null,
-      "notes": ""
+      "id": "T01",
+      "title": "Create ui/intent_router.py - Smart Intent Detection Module",
+      "file": "ui/intent_router.py",
+      "expected_function": "detect_intent(user_text, context) -> IntentResult",
+      "module": "Phase 1: Smart Router",
+      "status": "done",
+      "completed_at": "2026-08-18T10:01:21.687969",
+      "notes": "Auto-synced: file exists"
     },
     {
-      "id": "T002",
-      "title": "Design Session row with required details",
-      "file": "",
-      "expected_function": "",
-      "module": "General",
-      "status": "pending",
-      "completed_at": null,
-      "notes": ""
+      "id": "T02",
+      "title": "Integrate Intent Router in main_window.py send flow",
+      "file": "ui/main_window.py",
+      "expected_function": "_on_send_query_clicked",
+      "module": "Phase 1: Smart Router",
+      "status": "done",
+      "completed_at": "2026-08-18T10:01:21.700072",
+      "notes": "Auto-synced: file exists"
     },
     {
-      "id": "T003",
-      "title": "Increase chat height by compacting top bar",
-      "file": "",
-      "expected_function": "",
-      "module": "General",
-      "status": "pending",
-      "completed_at": null,
-      "notes": ""
+      "id": "T03",
+      "title": "Modify openhands_worker.py for chat-oriented event emission",
+      "file": "ui/openhands_worker.py",
+      "expected_function": "_on_agent_event",
+      "module": "Phase 2: Unified Worker",
+      "status": "done",
+      "completed_at": "2026-08-18T10:01:21.605751",
+      "notes": "Auto-synced: file exists"
     },
     {
-      "id": "T004",
-      "title": "Develop Drag & Drop blueprint feature",
-      "file": "",
-      "expected_function": "",
-      "module": "General",
+      "id": "T04",
+      "title": "Add conversation continuity after agent task completion",
+      "file": "ui/openhands_worker.py",
+      "expected_function": "finished_ok signal handler",
+      "module": "Phase 2: Unified Worker",
       "status": "pending",
       "completed_at": null,
-      "notes": ""
+      "notes": "Agent task complete hone ke baad conversation naturally continue ho."
     },
     {
-      "id": "T005",
-      "title": "Enhance app to accept any file format",
-      "file": "",
-      "expected_function": "",
-      "module": "General",
+      "id": "T05",
+      "title": "Build inline approval UI in chat messages",
+      "file": "ui/main_window.py",
+      "expected_function": "_show_approval_in_chat",
+      "module": "Phase 3: Inline Approval",
       "status": "pending",
       "completed_at": null,
-      "notes": ""
+      "notes": "Jab agent approval maange, chat mein styled box dikhe with Approve/Reject buttons."
     },
     {
-      "id": "T006",
-      "title": "Display live date and time in status bar",
-      "file": "",
-      "expected_function": "",
-      "module": "General",
+      "id": "T06",
+      "title": "Handle approve/reject from chat text input",
+      "file": "ui/main_window.py",
+      "expected_function": "_on_send_query_clicked",
+      "module": "Phase 3: Inline Approval",
       "status": "pending",
       "completed_at": null,
-      "notes": ""
+      "notes": "User 'approve', 'yes', 'haan' type kare to approve. 'reject', 'no', 'nahi' to reject."
     },
     {
-      "id": "T007",
-      "title": "Implement one-click session copy feature",
-      "file": "",
-      "expected_function": "",
-      "module": "General",
+      "id": "T07",
+      "title": "Remove Agent control buttons from composer row",
+      "file": "ui/main_window.py",
+      "expected_function": "_build_composer_row",
+      "module": "Phase 4: UI Cleanup",
       "status": "pending",
       "completed_at": null,
-      "notes": ""
+      "notes": "btn_start_agent, btn_approve_agent, btn_reject_agent, btn_kill_agent composer se hatao."
     },
     {
-      "id": "T008",
-      "title": "Remove unnecessary buttons from right panel",
-      "file": "",
-      "expected_function": "",
-      "module": "General",
+      "id": "T08",
+      "title": "Convert Agent Logs tab to read-only log viewer",
+      "file": "ui/main_window.py",
+      "expected_function": "_build_agent_logs_tab",
+      "module": "Phase 4: UI Cleanup",
       "status": "pending",
       "completed_at": null,
-      "notes": ""
+      "notes": "Agent Logs tab se saare buttons hatao. Sirf logs dikhao."
+    },
+    {
+      "id": "T09",
+      "title": "Add agent status indicator in chat session row",
+      "file": "ui/main_window.py",
+      "expected_function": "_build_chat_area",
+      "module": "Phase 4: UI Cleanup",
+      "status": "pending",
+      "completed_at": null,
+      "notes": "Session row mein agent status: Agent Active / Waiting Approval / Idle."
+    },
+    {
+      "id": "T10",
+      "title": "Add natural language approval/rejection/kill commands",
+      "file": "ui/intent_router.py",
+      "expected_function": "detect_approval_intent",
+      "module": "Phase 5: Polish",
+      "status": "pending",
+      "completed_at": null,
+      "notes": "haan/ok/done -> approve, nahi/cancel -> reject, kill/stop -> kill agent."
+    },
+    {
+      "id": "T11",
+      "title": "Blueprint auto-update on agent task completion",
+      "file": "ui/main_window.py",
+      "expected_function": "_on_agent_finished",
+      "module": "Phase 5: Polish",
+      "status": "pending",
+      "completed_at": null,
+      "notes": "Agent task complete hone par blueprint progress auto-update ho."
+    },
+    {
+      "id": "T12",
+      "title": "End-to-end testing of unified agentic chat",
+      "file": "tests/test_unified_chat.py",
+      "expected_function": "test_unified_flow",
+      "module": "Phase 5: Polish",
+      "status": "done",
+      "completed_at": "2026-08-18T09:32:32.041829",
+      "notes": "Auto-synced: file exists"
     }
   ],
   "progress": {
-    "total_tasks": 8,
-    "done": 0,
+    "total_tasks": 12,
+    "done": 4,
     "pending": 8,
-    "percentage": 0
+    "percentage": 33
   },
-  "loaded_at": "2026-08-14T22:12:20.576492"
+  "loaded_at": "2026-08-18T09:23:49.645943"
 }
 
 
@@ -11523,6 +11835,154 @@ FILE: blueprints/erp_ai_tool_blueprint.json
 
 
 ================================================================================
+FILE: blueprints/unified_agentic_chat.json
+================================================================================
+
+{
+  "blueprint_id": "bp_unified_agentic_chat_001",
+  "title": "Unified Agentic Chat - Do Modes Se Ek Conversation",
+  "created_at": "2026-08-17",
+  "loaded_at": null,
+  "status": "in_progress",
+  "tasks": [
+    {
+      "id": "T01",
+      "title": "Create ui/intent_router.py - Smart Intent Detection Module",
+      "file": "ui/intent_router.py",
+      "expected_function": "detect_intent(user_text, context) -> IntentResult",
+      "module": "Phase 1: Smart Router",
+      "status": "pending",
+      "completed_at": null,
+      "notes": "Keyword + pattern based intent detection. Categories: QUESTION, TASK, COMMAND, AMBIGUOUS."
+    },
+    {
+      "id": "T02",
+      "title": "Integrate Intent Router in main_window.py send flow",
+      "file": "ui/main_window.py",
+      "expected_function": "_on_send_query_clicked",
+      "module": "Phase 1: Smart Router",
+      "status": "pending",
+      "completed_at": null,
+      "notes": "Replace direct QueryWorker call with router decision. TASK -> OpenHandsWorker, QUESTION -> QueryWorker."
+    },
+    {
+      "id": "T03",
+      "title": "Modify openhands_worker.py for chat-oriented event emission",
+      "file": "ui/openhands_worker.py",
+      "expected_function": "_on_agent_event",
+      "module": "Phase 2: Unified Worker",
+      "status": "pending",
+      "completed_at": null,
+      "notes": "Agent events ko chat-friendly format mein emit karo. Sab kuch chat mein dikhe."
+    },
+    {
+      "id": "T04",
+      "title": "Add conversation continuity after agent task completion",
+      "file": "ui/openhands_worker.py",
+      "expected_function": "finished_ok signal handler",
+      "module": "Phase 2: Unified Worker",
+      "status": "pending",
+      "completed_at": null,
+      "notes": "Agent task complete hone ke baad conversation naturally continue ho."
+    },
+    {
+      "id": "T05",
+      "title": "Build inline approval UI in chat messages",
+      "file": "ui/main_window.py",
+      "expected_function": "_show_approval_in_chat",
+      "module": "Phase 3: Inline Approval",
+      "status": "pending",
+      "completed_at": null,
+      "notes": "Jab agent approval maange, chat mein styled box dikhe with Approve/Reject buttons."
+    },
+    {
+      "id": "T06",
+      "title": "Handle approve/reject from chat text input",
+      "file": "ui/main_window.py",
+      "expected_function": "_on_send_query_clicked",
+      "module": "Phase 3: Inline Approval",
+      "status": "pending",
+      "completed_at": null,
+      "notes": "User 'approve', 'yes', 'haan' type kare to approve. 'reject', 'no', 'nahi' to reject."
+    },
+    {
+      "id": "T07",
+      "title": "Remove Agent control buttons from composer row",
+      "file": "ui/main_window.py",
+      "expected_function": "_build_composer_row",
+      "module": "Phase 4: UI Cleanup",
+      "status": "pending",
+      "completed_at": null,
+      "notes": "btn_start_agent, btn_approve_agent, btn_reject_agent, btn_kill_agent composer se hatao."
+    },
+    {
+      "id": "T08",
+      "title": "Convert Agent Logs tab to read-only log viewer",
+      "file": "ui/main_window.py",
+      "expected_function": "_build_agent_logs_tab",
+      "module": "Phase 4: UI Cleanup",
+      "status": "pending",
+      "completed_at": null,
+      "notes": "Agent Logs tab se saare buttons hatao. Sirf logs dikhao."
+    },
+    {
+      "id": "T09",
+      "title": "Add agent status indicator in chat session row",
+      "file": "ui/main_window.py",
+      "expected_function": "_build_chat_area",
+      "module": "Phase 4: UI Cleanup",
+      "status": "pending",
+      "completed_at": null,
+      "notes": "Session row mein agent status: Agent Active / Waiting Approval / Idle."
+    },
+    {
+      "id": "T10",
+      "title": "Add natural language approval/rejection/kill commands",
+      "file": "ui/intent_router.py",
+      "expected_function": "detect_approval_intent",
+      "module": "Phase 5: Polish",
+      "status": "pending",
+      "completed_at": null,
+      "notes": "haan/ok/done -> approve, nahi/cancel -> reject, kill/stop -> kill agent."
+    },
+    {
+      "id": "T11",
+      "title": "Blueprint auto-update on agent task completion",
+      "file": "ui/main_window.py",
+      "expected_function": "_on_agent_finished",
+      "module": "Phase 5: Polish",
+      "status": "pending",
+      "completed_at": null,
+      "notes": "Agent task complete hone par blueprint progress auto-update ho."
+    },
+    {
+      "id": "T12",
+      "title": "End-to-end testing of unified agentic chat",
+      "file": "tests/test_unified_chat.py",
+      "expected_function": "test_unified_flow",
+      "module": "Phase 5: Polish",
+      "status": "pending",
+      "completed_at": null,
+      "notes": "Test: question->chat, task->agent, approval flow, error handling, kill command."
+    }
+  ],
+  "progress": {
+    "total_tasks": 12,
+    "done": 0,
+    "pending": 12,
+    "percentage": 0
+  },
+  "phases": {
+    "Phase 1: Smart Router": ["T01", "T02"],
+    "Phase 2: Unified Worker": ["T03", "T04"],
+    "Phase 3: Inline Approval": ["T05", "T06"],
+    "Phase 4: UI Cleanup": ["T07", "T08", "T09"],
+    "Phase 5: Polish & Testing": ["T10", "T11", "T12"]
+  }
+}
+
+
+================================================================================
 FILE: blueprints/archive/bp_6d6de6e0_20260814_221220.json
 ================================================================================
 
@@ -11676,6 +12136,163 @@ FILE: blueprints/archive/bp_6d6de6e0_20260814_221220.json
     "percentage": 0
   },
   "loaded_at": "2026-08-14T21:51:06.201042"
+}
+
+
+================================================================================
+FILE: blueprints/archive/bp_9ed8a458_20260817_154950.json
+================================================================================
+
+{
+  "blueprint_id": "bp_9ed8a458",
+  "title": "Chat Application Enhancement",
+  "created_at": "2026-08-14",
+  "source_file": "table-f7b7b353-3557-4a79-a38c-a2baef302c4e.csv",
+  "status": "in_progress",
+  "modules": [
+    {
+      "name": "General",
+      "tasks": [
+        {
+          "id": "T01",
+          "title": "Implement Top bar buttons functionality",
+          "expected_file": "",
+          "expected_function": ""
+        },
+        {
+          "id": "T02",
+          "title": "Design Session row with required details",
+          "expected_file": "",
+          "expected_function": ""
+        },
+        {
+          "id": "T03",
+          "title": "Increase chat height by compacting top bar",
+          "expected_file": "",
+          "expected_function": ""
+        },
+        {
+          "id": "T04",
+          "title": "Develop Drag & Drop blueprint feature",
+          "expected_file": "",
+          "expected_function": ""
+        },
+        {
+          "id": "T05",
+          "title": "Enhance app to accept any file format",
+          "expected_file": "",
+          "expected_function": ""
+        },
+        {
+          "id": "T06",
+          "title": "Display live date and time in status bar",
+          "expected_file": "",
+          "expected_function": ""
+        },
+        {
+          "id": "T07",
+          "title": "Implement one-click session copy feature",
+          "expected_file": "",
+          "expected_function": ""
+        },
+        {
+          "id": "T08",
+          "title": "Remove unnecessary buttons from right panel",
+          "expected_file": "",
+          "expected_function": ""
+        }
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "T001",
+      "title": "Implement Top bar buttons functionality",
+      "file": "",
+      "expected_function": "",
+      "module": "General",
+      "status": "pending",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "T002",
+      "title": "Design Session row with required details",
+      "file": "",
+      "expected_function": "",
+      "module": "General",
+      "status": "pending",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "T003",
+      "title": "Increase chat height by compacting top bar",
+      "file": "",
+      "expected_function": "",
+      "module": "General",
+      "status": "pending",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "T004",
+      "title": "Develop Drag & Drop blueprint feature",
+      "file": "",
+      "expected_function": "",
+      "module": "General",
+      "status": "pending",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "T005",
+      "title": "Enhance app to accept any file format",
+      "file": "",
+      "expected_function": "",
+      "module": "General",
+      "status": "pending",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "T006",
+      "title": "Display live date and time in status bar",
+      "file": "",
+      "expected_function": "",
+      "module": "General",
+      "status": "pending",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "T007",
+      "title": "Implement one-click session copy feature",
+      "file": "",
+      "expected_function": "",
+      "module": "General",
+      "status": "pending",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "T008",
+      "title": "Remove unnecessary buttons from right panel",
+      "file": "",
+      "expected_function": "",
+      "module": "General",
+      "status": "pending",
+      "completed_at": null,
+      "notes": ""
+    }
+  ],
+  "progress": {
+    "total_tasks": 8,
+    "done": 0,
+    "pending": 8,
+    "percentage": 0
+  },
+  "loaded_at": "2026-08-14T22:12:20.576492"
 }
 
 
@@ -14647,6 +15264,149 @@ FILE: blueprints/archive/bp_erp_ai_tool_001_20260814_215106.json
 
 
 ================================================================================
+FILE: blueprints/archive/bp_unified_agentic_chat_001_20260818_092349.json
+================================================================================
+
+{
+  "blueprint_id": "bp_unified_agentic_chat_001",
+  "title": "Unified Agentic Chat - Do Modes Se Ek Conversation",
+  "created_at": "2026-08-17",
+  "source_file": "unified_agentic_chat.json",
+  "status": "in_progress",
+  "modules": [],
+  "tasks": [
+    {
+      "id": "T01",
+      "title": "Create ui/intent_router.py - Smart Intent Detection Module",
+      "file": "ui/intent_router.py",
+      "expected_function": "detect_intent(user_text, context) -> IntentResult",
+      "module": "Phase 1: Smart Router",
+      "status": "pending",
+      "completed_at": null,
+      "notes": "Keyword + pattern based intent detection. Categories: QUESTION, TASK, COMMAND, AMBIGUOUS."
+    },
+    {
+      "id": "T02",
+      "title": "Integrate Intent Router in main_window.py send flow",
+      "file": "ui/main_window.py",
+      "expected_function": "_on_send_query_clicked",
+      "module": "Phase 1: Smart Router",
+      "status": "pending",
+      "completed_at": null,
+      "notes": "Replace direct QueryWorker call with router decision. TASK -> OpenHandsWorker, QUESTION -> QueryWorker."
+    },
+    {
+      "id": "T03",
+      "title": "Modify openhands_worker.py for chat-oriented event emission",
+      "file": "ui/openhands_worker.py",
+      "expected_function": "_on_agent_event",
+      "module": "Phase 2: Unified Worker",
+      "status": "pending",
+      "completed_at": null,
+      "notes": "Agent events ko chat-friendly format mein emit karo. Sab kuch chat mein dikhe."
+    },
+    {
+      "id": "T04",
+      "title": "Add conversation continuity after agent task completion",
+      "file": "ui/openhands_worker.py",
+      "expected_function": "finished_ok signal handler",
+      "module": "Phase 2: Unified Worker",
+      "status": "pending",
+      "completed_at": null,
+      "notes": "Agent task complete hone ke baad conversation naturally continue ho."
+    },
+    {
+      "id": "T05",
+      "title": "Build inline approval UI in chat messages",
+      "file": "ui/main_window.py",
+      "expected_function": "_show_approval_in_chat",
+      "module": "Phase 3: Inline Approval",
+      "status": "pending",
+      "completed_at": null,
+      "notes": "Jab agent approval maange, chat mein styled box dikhe with Approve/Reject buttons."
+    },
+    {
+      "id": "T06",
+      "title": "Handle approve/reject from chat text input",
+      "file": "ui/main_window.py",
+      "expected_function": "_on_send_query_clicked",
+      "module": "Phase 3: Inline Approval",
+      "status": "pending",
+      "completed_at": null,
+      "notes": "User 'approve', 'yes', 'haan' type kare to approve. 'reject', 'no', 'nahi' to reject."
+    },
+    {
+      "id": "T07",
+      "title": "Remove Agent control buttons from composer row",
+      "file": "ui/main_window.py",
+      "expected_function": "_build_composer_row",
+      "module": "Phase 4: UI Cleanup",
+      "status": "pending",
+      "completed_at": null,
+      "notes": "btn_start_agent, btn_approve_agent, btn_reject_agent, btn_kill_agent composer se hatao."
+    },
+    {
+      "id": "T08",
+      "title": "Convert Agent Logs tab to read-only log viewer",
+      "file": "ui/main_window.py",
+      "expected_function": "_build_agent_logs_tab",
+      "module": "Phase 4: UI Cleanup",
+      "status": "pending",
+      "completed_at": null,
+      "notes": "Agent Logs tab se saare buttons hatao. Sirf logs dikhao."
+    },
+    {
+      "id": "T09",
+      "title": "Add agent status indicator in chat session row",
+      "file": "ui/main_window.py",
+      "expected_function": "_build_chat_area",
+      "module": "Phase 4: UI Cleanup",
+      "status": "pending",
+      "completed_at": null,
+      "notes": "Session row mein agent status: Agent Active / Waiting Approval / Idle."
+    },
+    {
+      "id": "T10",
+      "title": "Add natural language approval/rejection/kill commands",
+      "file": "ui/intent_router.py",
+      "expected_function": "detect_approval_intent",
+      "module": "Phase 5: Polish",
+      "status": "pending",
+      "completed_at": null,
+      "notes": "haan/ok/done -> approve, nahi/cancel -> reject, kill/stop -> kill agent."
+    },
+    {
+      "id": "T11",
+      "title": "Blueprint auto-update on agent task completion",
+      "file": "ui/main_window.py",
+      "expected_function": "_on_agent_finished",
+      "module": "Phase 5: Polish",
+      "status": "pending",
+      "completed_at": null,
+      "notes": "Agent task complete hone par blueprint progress auto-update ho."
+    },
+    {
+      "id": "T12",
+      "title": "End-to-end testing of unified agentic chat",
+      "file": "tests/test_unified_chat.py",
+      "expected_function": "test_unified_flow",
+      "module": "Phase 5: Polish",
+      "status": "pending",
+      "completed_at": null,
+      "notes": "Test: question->chat, task->agent, approval flow, error handling, kill command."
+    }
+  ],
+  "progress": {
+    "total_tasks": 12,
+    "done": 0,
+    "pending": 12,
+    "percentage": 0
+  },
+  "loaded_at": "2026-08-17T15:49:50.844801"
+}
+
+
+================================================================================
 FILE: projects/medical_erp_v2.json
 ================================================================================
 
@@ -15335,6 +16095,277 @@ FILE: test_output/sample.py
 ================================================================================
 
 print("hello from applied code block")
+
+
+================================================================================
+FILE: tests/test_ai_financial_ledger_audit.py
+================================================================================
+
+from ai_financial_ledger_audit import run_audit
+
+def test_flagging_and_off_hours_and_duplicate():
+    payload = {
+        "company_code": "C1",
+        "transactions": [
+            {
+                "txn_id": "T1",
+                "timestamp": "2026-08-16T02:15:00",
+                "vendor_id": "V1",
+                "amount": 1000.0,
+                "entered_by": "U1",
+                "approved_by": "U1",
+                "invoice_no": "INV1"
+            },
+            {
+                "txn_id": "T2",
+                "timestamp": "2026-08-16T14:15:00",
+                "vendor_id": "V1",
+                "amount": 1000.0,
+                "entered_by": "U2",
+                "approved_by": "U3",
+                "invoice_no": "INV1"
+            },
+            {
+                "txn_id": "T3",
+                "timestamp": "2026-08-16T23:30:00Z",
+                "vendor_id": "V2",
+                "amount": 200000.0,
+                "entered_by": "U4",
+                "approved_by": None,
+                "invoice_no": "INV2"
+            }
+        ]
+    }
+    report = run_audit(payload)
+    assert report["company_code"] == "C1"
+    # Expect at least two suspicious transactions across these cases
+    assert report["suspicious_transactions_count"] >= 2
+
+
+================================================================================
+FILE: tests/test_ai_inventory_allocator.py
+================================================================================
+
+import json
+from ai_inventory_allocator import evaluate_inventory_allocation
+
+def test_evaluate_basic_case():
+    input_data = {
+        "fulfillment_center_id": "TEST",
+        "evaluation_date": "2026-08-16",
+        "warehouses": [
+            {"wh_id": "A", "stock_on_hand": 100, "daily_burn_rate": 10, "lead_time_days": 3, "holding_cost_per_unit": 1.0},
+            {"wh_id": "B", "stock_on_hand": 500, "daily_burn_rate": 5, "lead_time_days": 2, "holding_cost_per_unit": 1.0},
+        ],
+        "safety_stock_buffer_days": 2,
+        "inter_wh_transfer_cost_per_unit": 1.0
+    }
+    report = evaluate_inventory_allocation(input_data)
+    assert report["fulfillment_center_id"] == "TEST"
+    assert isinstance(report["warehouse_analysis"], list)
+    # ensure reorder_point values are ints
+    for wa in report["warehouse_analysis"]:
+        assert isinstance(wa["reorder_point"], int)
+
+
+================================================================================
+FILE: tests/test_caretaker_orchestrator.py
+================================================================================
+
+﻿import os
+from fastapi.testclient import TestClient
+from types import SimpleNamespace
+
+import caretaker_orchestrator as co
+
+client = TestClient(co.app)
+
+
+def test_preview_code_blocks(tmp_path):
+    sample = """### FILE: hello/world.txt
+### ACTION: create
+<<<CODE_START>>>
+hello from preview
+<<<CODE_END>>>
+"""
+    resp = client.post("/preview_code_blocks", json={"raw_text": sample, "project_root": str(tmp_path)})
+    assert resp.status_code == 200
+    data = resp.json()
+    assert isinstance(data, list)
+    assert len(data) == 1
+    assert "+++" in data[0]["diff"] or "@@" in data[0]["diff"]
+
+
+def test_apply_and_run_sandbox_monkeypatched(monkeypatch, tmp_path):
+    fake_result = SimpleNamespace(file_path="a.py", success=True, message="ok", backup_path=None)
+    monkeypatch.setattr(co, "apply_all_blocks", lambda root, raw_text: [fake_result])
+
+    class FakeProc:
+        def __init__(self):
+            self.returncode = 0
+            self.stdout = "pytests ran"
+            self.stderr = ""
+
+    monkeypatch.setattr("subprocess.run", lambda *args, **kwargs: FakeProc())
+
+    sample = """### FILE: a.py
+### ACTION: replace
+<<<CODE_START>>>
+print("ok")
+<<<CODE_END>>>
+"""
+    resp = client.post("/apply_and_run_sandbox", json={"raw_text": sample, "project_root": str(tmp_path), "pytest_args": ""})
+    assert resp.status_code == 200
+    data = resp.json()
+    assert "apply_results" in data
+    assert data["pytest"] is None
+
+
+================================================================================
+FILE: tests/test_chroma_memory_mock.py
+================================================================================
+
+import builtins
+from types import SimpleNamespace
+
+def test_build_index_calls(monkeypatch, tmp_path):
+    # Minimal fake FileSummary
+    fs = SimpleNamespace(file_path="foo.py", file_type="py", module_docstring="doc", classes=[], functions=[], sql_tables=[], line_count=10, file_hash="h1")
+    # monkeypatch scan_project in chroma_memory to return our fake summary
+    monkeypatch.setattr("chroma_memory.scan_project", lambda root: [fs])
+    # fake chromadb collection API surface used by ChromaMemory
+    fake_collection = SimpleNamespace(
+        get=lambda: {"ids": [], "metadatas": []},
+        add=lambda **kw: None,
+        delete=lambda **kw: None,
+        upsert=lambda **kw: None,
+        query=lambda **kw: {"ids":[[]], "documents":[[]], "distances":[[]]}
+    )
+    # monkeypatch chromadb PersistentClient to return a client whose get_or_create_collection returns fake_collection
+    monkeypatch.setitem(builtins.__dict__, "chromadb", SimpleNamespace(PersistentClient=lambda path: SimpleNamespace(get_or_create_collection=lambda name, embedding_function=None: fake_collection)))
+    from chroma_memory import ChromaMemory
+    mem = ChromaMemory(storage_dir=str(tmp_path))
+    count = mem.build_full_index(str(tmp_path))
+    assert count == 1
+
+
+================================================================================
+FILE: tests/test_code_block_applier.py
+================================================================================
+
+import os
+from code_block_applier import parse_code_blocks, apply_all_blocks
+
+def test_parse_and_apply_create(tmp_path):
+    sample = """### FILE: test_sample.txt
+### ACTION: create
+<<<CODE_START>>>
+hello world
+<<<CODE_END>>>
+"""
+    blocks = parse_code_blocks(sample)
+    assert len(blocks) == 1
+    results = apply_all_blocks(str(tmp_path), sample)
+    assert results and results[0].success
+    created = tmp_path / "test_sample.txt"
+    assert created.exists()
+    assert created.read_text().strip() == "hello world"
+
+
+================================================================================
+FILE: tests/test_unified_chat.py
+================================================================================
+
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from ui.intent_router import detect_intent, IntentType
+
+
+class TestIntentDetection:
+    def test_simple_question(self):
+        result = detect_intent("date_engine kaise kaam karta hai?")
+        assert result.intent == IntentType.QUESTION
+
+    def test_simple_task(self):
+        result = detect_intent("supplier_engine mein function add karo")
+        assert result.intent == IntentType.TASK
+
+    def test_task_natural_language(self):
+        result = detect_intent("code improve karo")
+        assert result.intent == IntentType.TASK
+
+    def test_task_hinglish(self):
+        result = detect_intent("naya feature daalo")
+        assert result.intent == IntentType.TASK
+
+    def test_question_hinglish(self):
+        result = detect_intent("ye kya hai")
+        assert result.intent == IntentType.QUESTION
+
+    def test_explicit_agent_command(self):
+        result = detect_intent("/agent test file banao")
+        assert result.intent == IntentType.TASK
+        assert result.confidence == 1.0
+
+    def test_empty_input(self):
+        result = detect_intent("")
+        assert result.intent == IntentType.AMBIGUOUS
+
+
+class TestApprovalDetection:
+    def test_approve_english(self):
+        result = detect_intent("approve", agent_waiting=True)
+        assert result.intent == IntentType.APPROVAL
+
+    def test_approve_hinglish(self):
+        result = detect_intent("haan", agent_waiting=True)
+        assert result.intent == IntentType.APPROVAL
+
+    def test_approve_natural(self):
+        result = detect_intent("kar do", agent_waiting=True)
+        assert result.intent == IntentType.APPROVAL
+
+    def test_reject_english(self):
+        result = detect_intent("reject", agent_waiting=True)
+        assert result.intent == IntentType.REJECTION
+
+    def test_reject_hinglish(self):
+        result = detect_intent("nahi", agent_waiting=True)
+        assert result.intent == IntentType.REJECTION
+
+    def test_kill_command(self):
+        result = detect_intent("kill", agent_waiting=True)
+        assert result.intent == IntentType.KILL
+
+    def test_kill_hinglish(self):
+        result = detect_intent("band karo", agent_waiting=True)
+        assert result.intent == IntentType.KILL
+
+
+class TestBlueprintCommands:
+    def test_blueprint_status(self):
+        result = detect_intent("blueprint status")
+        assert result.intent == IntentType.COMMAND
+
+    def test_bp_status_short(self):
+        result = detect_intent("bp status")
+        assert result.intent == IntentType.COMMAND
+
+    def test_progress_command(self):
+        result = detect_intent("progress")
+        assert result.intent == IntentType.COMMAND
+
+
+class TestNotApprovalWhenNotWaiting:
+    def test_haan_not_waiting(self):
+        result = detect_intent("haan", agent_waiting=False)
+        assert result.intent != IntentType.APPROVAL
+
+    def test_approve_not_waiting(self):
+        result = detect_intent("approve", agent_waiting=False)
+        assert result.intent != IntentType.APPROVAL
 
 
 ================================================================================
@@ -16080,6 +17111,240 @@ class ProductionBottleneckChartWidget(QWidget):
 
 
 ================================================================================
+FILE: ui/intent_router.py
+================================================================================
+
+"""
+ui/intent_router.py
+Smart Intent Router - Unified Agentic Chat (T01 + T10)
+---------------------------------------------------------
+Ab HARD CODED keywords nahi hain.
+LLM khud decide karta hai ki user ka input TASK hai ya QUESTION.
+User kuch bhi likhe - koi bhi language, koi bhi words - LLM samjhega.
+
+Fallback: Agar LLM fail ho jaye to simple heuristics use hote hain.
+"""
+from __future__ import annotations
+
+from dataclasses import dataclass
+from enum import Enum
+
+
+class IntentType(Enum):
+    """User input ka detected intent."""
+    QUESTION = "question"
+    TASK = "task"
+    COMMAND = "command"
+    APPROVAL = "approval"
+    REJECTION = "rejection"
+    KILL = "kill"
+    AMBIGUOUS = "ambiguous"
+
+
+@dataclass
+class IntentResult:
+    """Intent detection ka result."""
+    intent: IntentType
+    confidence: float
+    reason: str
+
+
+# ------------------------------------------------------------------ #
+# FAST CHECKS (LLM call se pehle - zero cost)
+# ------------------------------------------------------------------ #
+
+COMMAND_KEYWORDS = [
+    "blueprint status", "blueprint tasks", "blueprint compare",
+    "bp status", "bp tasks", "bp compare", "progress",
+]
+
+APPROVAL_KEYWORDS = [
+    "approve", "yes", "haan", "han", "ok", "done", "y",
+    "chalo", "sahi hai", "theek hai", "kar do", "kardo",
+    "ha", "ji haan", "bilkul", "aage badho", "continue",
+    "proceed", "go ahead", "sure", "okay", "okk",
+]
+
+REJECTION_KEYWORDS = [
+    "reject", "no", "nahi", "nhi", "cancel", "n",
+    "rehne do", "skip", "mat karo", "mat", "nahi chahiye",
+    "band karo", "chhod do", "drop", "leave it",
+]
+
+KILL_KEYWORDS = [
+    "kill", "stop", "band karo", "band kar", "roko", "abort",
+    "bas karo", "khatam karo", "terminate", "exit", "force stop",
+]
+
+
+# ------------------------------------------------------------------ #
+# MAIN DETECTION FUNCTION
+# ------------------------------------------------------------------ #
+
+def detect_intent(user_text: str, agent_waiting: bool = False) -> IntentResult:
+    """
+    Main entry point.
+    Priority:
+    1. Agent waiting → approval/rejection/kill check (fast, no LLM)
+    2. Commands check (fast, no LLM)
+    3. /agent prefix (fast, no LLM)
+    4. LLM-based classification (smart, any language)
+    """
+    text_lower = user_text.strip().lower()
+
+    if not text_lower:
+        return IntentResult(IntentType.AMBIGUOUS, 0.0, "Empty input")
+
+    # Priority 1: Agent waiting hai to approval/rejection/kill
+    if agent_waiting:
+        approval_result = _detect_approval_intent(text_lower)
+        if approval_result.intent != IntentType.AMBIGUOUS:
+            return approval_result
+
+    # Priority 2: Commands
+    for cmd in COMMAND_KEYWORDS:
+        if cmd in text_lower:
+            return IntentResult(IntentType.COMMAND, 0.95, f"Command: {cmd}")
+
+    # Priority 3: /agent prefix
+    if text_lower.startswith("/agent"):
+        return IntentResult(IntentType.TASK, 1.0, "Explicit /agent command")
+
+    # Priority 4: LLM-based classification (SMART - no hardcoded keywords)
+    llm_result = _classify_with_llm(user_text)
+    if llm_result is not None:
+        return llm_result
+
+    # Fallback: Agar LLM fail ho jaye to simple heuristic
+    return _fallback_detection(text_lower)
+
+
+def _detect_approval_intent(text_lower: str) -> IntentResult:
+    """Agent waiting ke waqt user response detect karo."""
+    # Kill (highest priority)
+    for kw in KILL_KEYWORDS:
+        if kw in text_lower:
+            return IntentResult(IntentType.KILL, 0.95, f"Kill: {kw}")
+
+    # Approval
+    for kw in APPROVAL_KEYWORDS:
+        if (text_lower == kw or
+                text_lower.startswith(kw + " ") or
+                text_lower.endswith(" " + kw) or
+                kw in text_lower):
+            return IntentResult(IntentType.APPROVAL, 0.9, f"Approval: {kw}")
+
+    # Rejection
+    for kw in REJECTION_KEYWORDS:
+        if (text_lower == kw or
+                text_lower.startswith(kw + " ") or
+                text_lower.endswith(" " + kw) or
+                kw in text_lower):
+            return IntentResult(IntentType.REJECTION, 0.9, f"Rejection: {kw}")
+
+    return IntentResult(IntentType.AMBIGUOUS, 0.0, "No approval/rejection detected")
+
+
+def _classify_with_llm(user_text: str) -> IntentResult | None:
+    """
+    LLM se intent classify karo.
+    User kuch bhi likhe - LLM samjhega.
+    Koi hardcoded keyword nahi chahiye.
+    """
+    try:
+        from llm_router import ask_llm
+
+        prompt = f"""Classify the following user message into exactly ONE category.
+
+Categories:
+- TASK: User wants something to be DONE (create file, edit code, add function, fix bug, run command, build something, modify something, write code, delete something)
+- QUESTION: User wants to KNOW something (explanation, how something works, what is something, compare, describe)
+
+User message: "{user_text}"
+
+Reply with ONLY one word: TASK or QUESTION"""
+
+        response = ask_llm(prompt).strip().upper()
+
+        if "TASK" in response:
+            return IntentResult(IntentType.TASK, 0.90, "LLM classified as TASK")
+        elif "QUESTION" in response:
+            return IntentResult(IntentType.QUESTION, 0.90, "LLM classified as QUESTION")
+        else:
+            return None  # Unclear response, fallback
+
+    except Exception:
+        return None  # LLM fail, fallback
+
+
+def _fallback_detection(text_lower: str) -> IntentResult:
+    """
+    Fallback: Agar LLM fail ho jaye.
+    Simple heuristic - action verbs check karo.
+    """
+    action_words = [
+        "banao", "bana", "create", "add", "edit", "fix", "modify",
+        "delete", "remove", "update", "write", "implement", "refactor",
+        "optimize", "change", "replace", "install", "run", "execute",
+        "debug", "solve", "theek", "likho", "likh", "karo", "kar",
+        "daalo", "daal", "improve", "better", "naya", "new",
+    ]
+
+    question_words = [
+        "kya", "kaise", "kyun", "kyu", "kaun", "samjhaao", "samjhao",
+        "batao", "bata", "what", "how", "why", "when", "where", "who",
+        "explain", "describe", "tell", "show", "difference", "compare",
+        "which", "can you", "kya hai", "kaam karta",
+    ]
+
+    action_score = sum(1 for w in action_words if w in text_lower)
+    question_score = sum(1 for w in question_words if w in text_lower)
+
+    if action_score > question_score:
+        return IntentResult(IntentType.TASK, 0.6, f"Fallback: action words ({action_score})")
+    elif question_score > action_score:
+        return IntentResult(IntentType.QUESTION, 0.6, f"Fallback: question words ({question_score})")
+    else:
+        # Default: Question (safe - read-only)
+        return IntentResult(IntentType.QUESTION, 0.5, "Fallback: default to question (safe)")
+
+
+# ------------------------------------------------------------------ #
+# STANDALONE TEST
+# ------------------------------------------------------------------ #
+
+if __name__ == "__main__":
+    test_cases = [
+        ("supplier_engine mein search function add karo", False),
+        ("date_engine kaise kaam karta hai?", False),
+        ("blueprint status", False),
+        ("approve", True),
+        ("kar do", True),
+        ("nahi", True),
+        ("kill", True),
+        ("/agent test file banao", False),
+        ("hello kaise ho", False),
+        ("code improve karo", False),
+        ("naya feature daalo", False),
+        ("ye kya hai", False),
+    ]
+
+    print("=" * 60)
+    print("  Intent Router - Test Results (LLM-based)")
+    print("=" * 60)
+
+    for text, waiting in test_cases:
+        result = detect_intent(text, agent_waiting=waiting)
+        print(f"\n  Input: '{text}'")
+        print(f"  Agent Waiting: {waiting}")
+        print(f"  → Intent: {result.intent.value}")
+        print(f"  → Confidence: {result.confidence:.0%}")
+        print(f"  → Reason: {result.reason}")
+
+    print("\n" + "=" * 60)
+
+
+================================================================================
 FILE: ui/main_window.py
 ================================================================================
 
@@ -16123,6 +17388,7 @@ from PyQt6.QtWidgets import (
     QProgressBar,
     QPushButton,
     QTabWidget,
+    QSplitter,
     QTextEdit,
     QTextBrowser,
     QTreeWidget,
@@ -16140,6 +17406,7 @@ from ui.chat_formatter import (
     get_chat_area_background,
 )
 from ui.query_worker import MAX_HISTORY_MESSAGES, QueryWorker
+from ui.intent_router import detect_intent, IntentType
 from ui.scan_worker import ScanWorker
 from code_block_applier import apply_all_blocks
 # OpenHands Agent ko safely import karte hain (agar environment mein na ho toh bhi UI crash na ho)
@@ -16580,6 +17847,8 @@ class MainWindow(QMainWindow):
         self._load_last_project_folder()
         self._auto_load_blueprint()
         self._last_agent_text: str = ""
+        self._agent_waiting_for_user: bool = False
+        self._agent_pending_detail: str | None = None
 
         # Status bar mein live date/time
         self.lbl_datetime = QLabel("")
@@ -16610,6 +17879,7 @@ class MainWindow(QMainWindow):
         self.dock_sidebar = self._build_sidebar_dock()
         self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.dock_sidebar)
 
+        # Restore the right utility dock (Files / Agent Logs / Apply Code)
         self.dock_utility = self._build_utility_dock()
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.dock_utility)
 
@@ -16618,8 +17888,8 @@ class MainWindow(QMainWindow):
 
     def _build_menu_bar(self) -> None:
         view_menu = self.menuBar().addMenu("&View")
+        # Only add sidebar toggle (utility tabs are now embedded in center panel)
         view_menu.addAction(self.dock_sidebar.toggleViewAction())
-        view_menu.addAction(self.dock_utility.toggleViewAction())
         view_menu.addSeparator()
 
         self.action_dark_mode = QAction("Dark Mode", self, checkable=True)
@@ -16748,6 +18018,10 @@ class MainWindow(QMainWindow):
         session_row.addStretch(1)
 
         self.lbl_model_status = QLabel("Model: Auto (Groq → OpenRouter)")
+        self.lbl_agent_indicator = QLabel("✅ Agent Idle")
+        self.lbl_agent_indicator.setObjectName("SubtitleLabel")
+        self.lbl_agent_indicator.setStyleSheet("color: #66BB6A; font-weight: bold;")
+        session_row.addWidget(self.lbl_agent_indicator)
         self.lbl_model_status.setObjectName("SubtitleLabel")
         session_row.addWidget(self.lbl_model_status)
 
@@ -16786,12 +18060,14 @@ class MainWindow(QMainWindow):
         row = QHBoxLayout()
         row.setSpacing(8)
 
+        # 📎 Attach button
         self.btn_attach_file = QPushButton("📎")
         self.btn_attach_file.setObjectName("IconButton")
         self.btn_attach_file.setFixedWidth(38)
         self.btn_attach_file.setToolTip("Attach a file path into your question")
         row.addWidget(self.btn_attach_file)
 
+        # 📝 Input box
         self.txt_query_input = QLineEdit()
         self.txt_query_input.setObjectName("ComposerInput")
         self.txt_query_input.setPlaceholderText(
@@ -16800,10 +18076,25 @@ class MainWindow(QMainWindow):
         self.txt_query_input.setClearButtonEnabled(True)
         row.addWidget(self.txt_query_input, stretch=1)
 
+        # 📤 Send button
         self.btn_send_query = QPushButton("Send")
         self.btn_send_query.setObjectName("PrimaryButton")
         self.btn_send_query.setMinimumWidth(88)
         row.addWidget(self.btn_send_query)
+
+        # Agent buttons ab hidden hain - sab chat se hota hai (Unified Agentic Chat)
+        # Ye buttons sirf internal references ke liye rakhte hain, UI mein nahi dikhenge
+        self.btn_start_agent = QPushButton("▶ Start Agent")
+        self.btn_start_agent.setVisible(False)
+        
+        self.btn_approve_agent = QPushButton("✅ Approve")
+        self.btn_approve_agent.setVisible(False)
+        
+        self.btn_reject_agent = QPushButton("❌ Reject")
+        self.btn_reject_agent.setVisible(False)
+        
+        self.btn_kill_agent = QPushButton("⏹ Kill")
+        self.btn_kill_agent.setVisible(False)
 
         return row
 
@@ -16885,69 +18176,14 @@ class MainWindow(QMainWindow):
         layout.setContentsMargins(8, 8, 8, 8)
         layout.setSpacing(6)
 
-        # ---- Line 2: Agent action buttons (NEECHE) ----
-        ctrl_layout = QHBoxLayout()
-
-        self.btn_start_agent = QPushButton("▶ Start Agent")
-        self.btn_start_agent.setToolTip("Chat box ke text ko instruction maan kar agent start karega")
-        self.btn_start_agent.setEnabled(_OPENHANDS_AVAILABLE)
-        self.btn_start_agent.setStyleSheet("""
-            QPushButton { 
-                background-color: #4f7cff; color: white; font-weight: bold; 
-                border: none; padding: 6px 12px; border-radius: 4px; 
-            }
-            QPushButton:disabled { background-color: #2A2A38; color: #666666; }
-            QPushButton:hover:!disabled { background-color: #658cff; }
-        """)
-        ctrl_layout.addWidget(self.btn_start_agent)
-
-        self.btn_approve_agent = QPushButton("✅ Approve")
-        self.btn_approve_agent.setEnabled(False)
-        self.btn_approve_agent.setStyleSheet("""
-            QPushButton { 
-                background-color: #2E7D32; color: white; font-weight: bold; 
-                border: none; padding: 6px 12px; border-radius: 4px; 
-            }
-            QPushButton:disabled { background-color: #2A2A38; color: #666666; }
-            QPushButton:hover:!disabled { background-color: #388E3C; }
-        """)
-        ctrl_layout.addWidget(self.btn_approve_agent)
-
-        self.btn_reject_agent = QPushButton("❌ Reject")
-        self.btn_reject_agent.setEnabled(False)
-        self.btn_reject_agent.setStyleSheet("""
-            QPushButton { 
-                background-color: #C62828; color: white; font-weight: bold; 
-                border: none; padding: 6px 12px; border-radius: 4px; 
-            }
-            QPushButton:disabled { background-color: #2A2A38; color: #666666; }
-            QPushButton:hover:!disabled { background-color: #D32F2F; }
-        """)
-        ctrl_layout.addWidget(self.btn_reject_agent)
-
-        self.btn_kill_agent = QPushButton("⏹ Kill")
-        self.btn_kill_agent.setEnabled(False)
-        self.btn_kill_agent.setStyleSheet("""
-            QPushButton { 
-                background-color: #E65100; color: white; font-weight: bold; 
-                border: none; padding: 6px 12px; border-radius: 4px; 
-            }
-            QPushButton:disabled { background-color: #2A2A38; color: #666666; }
-            QPushButton:hover:!disabled { background-color: #F57C00; }
-        """)
-        ctrl_layout.addWidget(self.btn_kill_agent)
-
-        ctrl_layout.addStretch(1)
-        layout.addLayout(ctrl_layout)
-
-        # ---- Status Indicator ----
+        # Status line (keeps visible in Agent Logs tab)
         self.lbl_agent_status = QLabel("⚪ Agent Idle")
         self.lbl_agent_status.setStyleSheet(
             "color: #9aa1b5; font-size: 13px; font-weight: bold; padding: 4px 0;"
         )
         layout.addWidget(self.lbl_agent_status)
 
-        # ---- Agent Logs Text Area ----
+        # Agent Logs Text Area (read-only)
         self.txt_agent_logs = QTextEdit()
         self.txt_agent_logs.setObjectName("AgentLogs")
         self.txt_agent_logs.setReadOnly(True)
@@ -17069,18 +18305,34 @@ class MainWindow(QMainWindow):
             self._rerender_chat_log()
 
     def _on_copy_link_clicked(self, url) -> None:
-        """Message ke neeche 📋 Copy link click → clipboard mein copy."""
+        """Chat ke andar ke links handle karo - copy + agent approve/reject."""
         href = url.toString()
-        if not href.startswith("copy:"):
+
+        # Agent approve/reject links
+        if href.startswith("agent:"):
+            action = href.split(":")[1]
+            if action == "approve":
+                self._append_message("system", "✅ Approved! Agent continue kar raha hai...")
+                self._agent_waiting_for_user = False
+                self._agent_pending_detail = None
+                self._on_approve_agent_clicked()
+            elif action == "reject":
+                self._append_message("system", "❌ Rejected. Agent ko bata diya gaya.")
+                self._agent_waiting_for_user = False
+                self._agent_pending_detail = None
+                self._on_reject_agent_clicked()
             return
-        try:
-            index = int(href.split(":")[1])
-        except (ValueError, IndexError):
-            return
-        if index < len(self._display_messages):
-            _role, text = self._display_messages[index]
-            QApplication.clipboard().setText(text)
-            self.statusBar().showMessage("📋 Message copied to clipboard", 3000)
+
+        # Copy links (existing functionality)
+        if href.startswith("copy:"):
+            try:
+                index = int(href.split(":")[1])
+            except (ValueError, IndexError):
+                return
+            if index < len(self._display_messages):
+                _role, text = self._display_messages[index]
+                QApplication.clipboard().setText(text)
+                self.statusBar().showMessage("📋 Message copied to clipboard", 3000)
 
     # ------------------------------------------------------------------
     # Session sidebar
@@ -17534,12 +18786,64 @@ class MainWindow(QMainWindow):
             self._active_session_id = self.storage.create_session("New Chat")
             self._reload_sessions_list(select_session_id=self._active_session_id)
 
+        # Append user message to chat and clear input
         self._append_message("user", query_text)
         self.txt_query_input.clear()
 
+        # --- Priority 1: Agent waiting hai to approval/rejection/kill check ---
+        if self._agent_waiting_for_user:
+            result = detect_intent(query_text, agent_waiting=True)
+            if result.intent == IntentType.APPROVAL:
+                self._append_message("system", "✅ Approved! Agent continue kar raha hai...")
+                self._agent_waiting_for_user = False
+                self._agent_pending_detail = None
+                self._on_approve_agent_clicked()
+                return
+            elif result.intent == IntentType.REJECTION:
+                self._append_message("system", "❌ Rejected. Agent ko bata diya gaya.")
+                self._agent_waiting_for_user = False
+                self._agent_pending_detail = None
+                self._on_reject_agent_clicked()
+                return
+            elif result.intent == IntentType.KILL:
+                self._append_message("system", "⏹ Agent kill kar diya gaya.")
+                self._agent_waiting_for_user = False
+                self._agent_pending_detail = None
+                self._on_kill_agent_clicked()
+                return
+
+        # --- Priority 2: /agent command ---
+        if query_text.startswith("/agent"):
+            instruction = query_text[len("/agent"):].strip()
+            if not instruction:
+                self._append_message("system", "Usage: /agent <instruction>")
+                return
+            self._start_agent_from_chat(instruction)
+            return
+
+        # --- Priority 3: Blueprint commands ---
+        if self._handle_blueprint_command(query_text):
+            return
+
+        # --- Priority 4: Tool routing (JSON payloads) ---
         if self._try_route_tool(query_text):
             return
 
+        # --- Priority 5: SMART ROUTER - Task vs Question ---
+        intent_result = detect_intent(query_text, agent_waiting=False)
+
+        if intent_result.intent == IntentType.TASK:
+            # Task detect hua -> Agent mode
+            self._append_message(
+                "system",
+                f"🤖 **Task detected!** (confidence: {intent_result.confidence:.0%})\n"
+                f"Reason: {intent_result.reason}\n"
+                f"Agent start ho raha hai..."
+            )
+            self._start_agent_from_chat(query_text)
+            return
+
+        # --- Default: Question mode - normal chat ---
         self._last_query_text = query_text
         self._set_querying_ui_state(active=True)
 
@@ -17552,6 +18856,57 @@ class MainWindow(QMainWindow):
         self._query_worker.failed.connect(self._on_query_failed)
         self._query_worker.finished.connect(self._on_query_thread_finished)
         self._query_worker.start()
+
+    def _start_agent_from_chat(self, instruction: str) -> None:
+        """
+        Chat se agent start karo - Unified Agentic Chat (T02).
+        User ko alag button dabane ki zaroorat nahi.
+        """
+        if not _OPENHANDS_AVAILABLE:
+            self._append_message(
+                "error",
+                "❌ OpenHands SDK installed nahi hai. Agent mode unavailable."
+            )
+            return
+
+        if self._agent_worker is not None and self._agent_worker.isRunning():
+            self._append_message(
+                "system",
+                "⚠️ Agent pehle se chal raha hai. Wait karein ya 'kill' likhein."
+            )
+            return
+
+        workspace = self._project_root
+        if not workspace:
+            self._append_message(
+                "error",
+                "❌ Pehle 'Select Project' se folder select karein."
+            )
+            return
+
+        # Agent logs mein separator
+        self.txt_agent_logs.append("\n" + "═" * 50)
+        self.txt_agent_logs.append(f"🚀 UNIFIED CHAT → AGENT: {instruction}")
+        self.txt_agent_logs.append(f"📁 Workspace: {workspace}")
+        self.txt_agent_logs.append("═" * 50)
+
+        # Agent worker create karo
+        self._agent_worker = OpenHandsWorker(
+            workspace_path=workspace,
+            user_instruction=instruction,
+            parent=self
+        )
+        self._agent_worker.event_received.connect(self._on_agent_event)
+        self._agent_worker.waiting_for_confirmation.connect(self._on_agent_waiting)
+        self._agent_worker.finished_ok.connect(self._on_agent_finished)
+        self._agent_worker.failed.connect(self._on_agent_failed)
+
+        self.btn_start_agent.setEnabled(False)
+        self.btn_kill_agent.setEnabled(True)
+        self._agent_elapsed_seconds = 0
+        self._agent_tick_timer.start(1000)
+        self._set_agent_status("🔄 Agent Processing... (0s)", "#4f7cff")
+        self._agent_worker.start()
 
     def _on_stop_query_clicked(self) -> None:
         """
@@ -17773,17 +19128,52 @@ class MainWindow(QMainWindow):
             self._refresh_action_states()
 
     def _auto_load_blueprint(self) -> None:
-        """App start hote hi active_blueprint.json auto-detect karo."""
+        """App start hote hi blueprint auto-load + AUTO-SYNC karo."""
         try:
-            from storage.blueprint_storage import get_active_blueprint
+            from storage.blueprint_storage import get_active_blueprint, mark_task_done_by_file
+
             bp = get_active_blueprint()
-            if bp:
-                self.btn_progress.setEnabled(True)
-                title = bp.get("title", "Unknown")
-                tasks_count = len(bp.get("tasks", []))
+            if not bp:
+                return
+
+            self.btn_progress.setEnabled(True)
+            title = bp.get("title", "Unknown")
+            tasks_count = len(bp.get("tasks", []))
+
+            # 🆕 AUTO-SYNC: Har task check karo - file exist hai to done mark karo
+            synced_count = 0
+            project_root = self._project_root or ""
+
+            for task in bp.get("tasks", []):
+                if task.get("status") == "done":
+                    continue  # Already done, skip
+
+                task_file = task.get("file", "")
+                if not task_file:
+                    continue
+
+                # File exist check karo
+                import os
+                full_path = os.path.join(project_root, task_file) if project_root else task_file
+
+                # Relative path se bhi check karo
+                if not os.path.isfile(full_path) and os.path.isfile(task_file):
+                    full_path = task_file
+
+                if os.path.isfile(full_path):
+                    # File exist hai! Task auto-done karo
+                    mark_task_done_by_file(task_file, notes="Auto-synced: file exists")
+                    synced_count += 1
+
+            if synced_count > 0:
                 self.statusBar().showMessage(
-                    f"📋 Blueprint auto-loaded: {title} ({tasks_count} tasks)", 5000
+                    f"📋 Blueprint auto-synced: {synced_count} tasks auto-marked as done!", 5000
                 )
+            else:
+                self.statusBar().showMessage(
+                    f"📋 Blueprint loaded: {title} ({tasks_count} tasks)", 5000
+                )
+
         except Exception:
             pass
             
@@ -17873,6 +19263,7 @@ class MainWindow(QMainWindow):
     # Replace start of method _on_start_agent_clicked with this guarded version
     def _on_start_agent_clicked(self) -> None:
         """Agent start karo - selected project folder mein kaam karega."""
+        # Unified mode: agent sirf chat se start hoga, button hidden hai
         # Guard: OpenHands not installed?
         if not _OPENHANDS_AVAILABLE:
             QMessageBox.warning(
@@ -18030,17 +19421,26 @@ class MainWindow(QMainWindow):
         return False
 
     def _on_agent_event(self, message: str) -> None:
-        # Router/System messages direct dikhao
-        if message.startswith("[Router]") or message.startswith("[System]"):
-            self.txt_agent_logs.append(message)
-            return
+        """Agent events ko chat mein dikhao + blueprint auto-update karo."""
+        try:
+            if message.startswith("[Router]") or message.startswith("[System]"):
+                self._append_message("system", message)
+            else:
+                self._append_message("assistant", message)
+        except Exception:
+            pass
 
-        # Agent actions aur results direct dikhao
-        self.txt_agent_logs.append(message)
+        # Agent logs mein bhi dikhao
+        if hasattr(self, "txt_agent_logs") and self.txt_agent_logs is not None:
+            self.txt_agent_logs.append(message)
+
+        # 🆕 T11: Blueprint Auto-Update
+        # Jab agent file create/edit kare, blueprint task auto-done karo
+        self._try_auto_update_blueprint(message)
     
     def _on_load_blueprint_clicked(self) -> None:
         """Blueprint file load karo - ANY format, ANY language."""
-        from PyQt6.QtWidgets import QFileDialog
+        
         from storage.blueprint_parser import parse_blueprint_file, get_supported_extensions
 
         file_path, _ = QFileDialog.getOpenFileName(
@@ -18092,26 +19492,63 @@ class MainWindow(QMainWindow):
         return ""
 
     def _set_agent_status(self, text: str, color: str) -> None:
-        """Agent status label update karta hai with color."""
+        """Agent status label + session row indicator dono update karo."""
+        # Agent Logs tab ka status label
         self.lbl_agent_status.setText(text)
         self.lbl_agent_status.setStyleSheet(
             f"color: {color}; font-size: 13px; font-weight: bold; padding: 4px 0;"
         )
+
+        # Session row ka indicator bhi update karo
+        if hasattr(self, 'lbl_agent_indicator'):
+            if "Processing" in text or "Working" in text:
+                self.lbl_agent_indicator.setText("🤖 Agent Active")
+                self.lbl_agent_indicator.setStyleSheet("color: #42A5F5; font-weight: bold;")
+            elif "Waiting" in text or "Approval" in text:
+                self.lbl_agent_indicator.setText("⏳ Waiting Approval")
+                self.lbl_agent_indicator.setStyleSheet("color: #FFA726; font-weight: bold;")
+            elif "Finished" in text or "Idle" in text:
+                self.lbl_agent_indicator.setText("✅ Agent Idle")
+                self.lbl_agent_indicator.setStyleSheet("color: #66BB6A; font-weight: bold;")
+            elif "Failed" in text:
+                self.lbl_agent_indicator.setText("❌ Agent Failed")
+                self.lbl_agent_indicator.setStyleSheet("color: #EF5350; font-weight: bold;")
+            else:
+                self.lbl_agent_indicator.setText(text)
+                self.lbl_agent_indicator.setStyleSheet(f"color: {color}; font-weight: bold;")
+
         # Window ke bottom status bar mein bhi dikhao
         self.statusBar().showMessage(text)
 
     def _on_agent_waiting(self, message: str) -> None:
+        """Agent approval required - chat mein inline buttons dikhao."""
         self._agent_tick_timer.stop()
-        self.txt_agent_logs.append(f"<b style='color:orange;'>⏳ [WAITING FOR APPROVAL]</b>")
-        self.txt_agent_logs.append(f"<b style='color:#FFD54F;'>  → {message}</b>")
-        self.btn_approve_agent.setEnabled(True)
-        self.btn_reject_agent.setEnabled(True)
+        self.txt_agent_logs.append(f"⏳ [WAITING FOR APPROVAL] {message}")
+
+        # Waiting state set karo
+        self._agent_waiting_for_user = True
+        self._agent_pending_detail = message
+
+        # Composer row buttons disable karo (ab chat se hoga)
+        self.btn_approve_agent.setEnabled(False)
+        self.btn_reject_agent.setEnabled(False)
+
         self._set_agent_status("⏳ Waiting for Your Approval", "#FFA726")
-        self._append_message(
-            "system",
-            f"⚠️ **Agent Approval Required!**\n\n**Action:** {message}\n\n"
-            "Right panel ke 'Agent Logs' tab mein Approve/Reject karein."
+
+        # Chat mein styled approval box dikhao with clickable links
+        approval_html = (
+            f'<div style="background-color:#2A2A38; padding:12px; '
+            f'border-radius:8px; border-left:4px solid #FFA726;">'
+            f'<b style="color:#FFA726;">⚠️ Agent Approval Required</b><br/>'
+            f'<span style="color:#E8E8ED;">{message}</span><br/><br/>'
+            f'<a href="agent:approve" style="color:#4CAF50; font-weight:bold; '
+            f'font-size:14pt; text-decoration:none;">✅ Approve</a>'
+            f'&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;'
+            f'<a href="agent:reject" style="color:#F44336; font-weight:bold; '
+            f'font-size:14pt; text-decoration:none;">❌ Reject</a>'
+            f'</div>'
         )
+        self.txt_chat_log.append(approval_html)
 
     def _on_approve_agent_clicked(self) -> None:
         if self._agent_worker:
@@ -18119,7 +19556,10 @@ class MainWindow(QMainWindow):
             self.btn_approve_agent.setEnabled(False)
             self.btn_reject_agent.setEnabled(False)
             self._set_agent_status("🔄 Agent Processing...", "#4f7cff")
-            # 🔴 Threading fix: UI freeze nahi hoga
+            # clear waiting flag
+            self._agent_waiting_for_user = False
+            self._agent_pending_detail = None
+            # Threaded call to avoid UI freeze
             import threading
             threading.Thread(target=self._agent_worker.approve_and_continue, daemon=True).start()
 
@@ -18129,7 +19569,10 @@ class MainWindow(QMainWindow):
             self.btn_approve_agent.setEnabled(False)
             self.btn_reject_agent.setEnabled(False)
             self._set_agent_status("🔄 Agent Processing...", "#4f7cff")
-            # 🔴 Threading fix: UI freeze nahi hoga
+            # clear waiting flag
+            self._agent_waiting_for_user = False
+            self._agent_pending_detail = None
+            # Threaded call to avoid UI freeze
             import threading
             threading.Thread(
                 target=lambda: self._agent_worker.reject_pending("User rejected the action via UI"),
@@ -18146,33 +19589,85 @@ class MainWindow(QMainWindow):
             import threading
             threading.Thread(target=self._agent_worker.kill, daemon=True).start()
 
+    def _try_auto_update_blueprint(self, event_message: str) -> None:
+        """
+        T11: Agent jab file create/edit kare, blueprint task auto-done karo.
+        Event message se file path extract karke blueprint_storage call karo.
+        """
+        try:
+            from storage.blueprint_storage import get_active_blueprint, mark_task_done_by_file
+
+            # Check karo blueprint loaded hai ya nahi
+            bp = get_active_blueprint()
+            if not bp:
+                return
+
+            # File path extract karo event message se
+            file_path = self._extract_path_helper(event_message)
+            if not file_path:
+                return
+
+            # Blueprint mein matching task dhundo aur done mark karo
+            success = mark_task_done_by_file(file_path, notes="Auto-detected by agent")
+            if success:
+                self._append_message(
+                    "system",
+                    f"📋 **Blueprint Auto-Updated!**\n"
+                    f"File `{file_path}` edit hui → matching task 'done' mark ho gaya."
+                )
+                # Progress button bhi enable karo
+                self.btn_progress.setEnabled(True)
+
+        except Exception:
+            pass  # Blueprint update fail hone par agent kaam mat roko
+
     def _on_agent_finished(self, message: str) -> None:
+        """Agent task complete - chat mein natural summary dikhao."""
         self.txt_agent_logs.append(f"\n🎉 DONE: {message}")
         self.txt_agent_logs.append("─" * 50 + "\n")
 
-        if self._last_agent_text:
-            self._append_message("assistant", self._last_agent_text)
-            self._last_agent_text = ""
-        else:
-            self._append_message("system", f"✅ **Agent Task Completed** — {message}")
+        # Chat mein styled completion box dikhao
+        completion_html = (
+            f'<div style="background-color:#1B3A2A; padding:12px; '
+            f'border-radius:8px; border-left:4px solid #4CAF50;">'
+            f'<b style="color:#4CAF50;">✅ Agent Task Completed!</b><br/>'
+            f'<span style="color:#E8E8ED;">{message}</span><br/><br/>'
+            f'<span style="color:#9aa1b5; font-size:10pt;">'
+            f'Agent ne apna kaam poora kiya. '
+            f'Aap follow-up sawal puch sakte hain ya naya task de sakte hain.'
+            f'</span>'
+            f'</div>'
+        )
+        self.txt_chat_log.append(completion_html)
+
+        # Chat history mein bhi add karo (conversation continuity)
+        self._append_message(
+            "system",
+            f"✅ **Agent Task Completed!**\n{message}\n\n"
+            f"Kuch aur chahiye? Naya task likho ya sawal pucho. 👇"
+        )
 
         self._set_agent_status("✅ Agent Finished", "#66BB6A")
         self._cleanup_agent_worker()
 
     def _on_agent_failed(self, message: str) -> None:
-        """Agent failed - error summary chat mein dikhao."""
+        """Agent failed - chat mein friendly error dikhao."""
         self.txt_agent_logs.append(f"<b style='color:red;'>💥 [FAILED] {message}</b>")
-        
-        # ❌ Error summary chat window mein
-        error_summary = (
-            f"❌ **Agent Task Failed!**\n\n"
-            f"**Error:** {message}\n\n"
-            f"Kuch technical problem aa gayi. "
-            f"Aap dobara try kar sakte hain ya task change kar sakte hain."
+
+        # Chat mein styled error box
+        error_html = (
+            f'<div style="background-color:#3A1B1B; padding:12px; '
+            f'border-radius:8px; border-left:4px solid #F44336;">'
+            f'<b style="color:#F44336;">❌ Agent Task Failed</b><br/>'
+            f'<span style="color:#E8E8ED;">{message[:300]}</span><br/><br/>'
+            f'<span style="color:#9aa1b5; font-size:10pt;">'
+            f'💡 Tips: API quota check karo, ya task dobara try karo. '
+            f'"kill" likh kar agent band bhi kar sakte ho.'
+            f'</span>'
+            f'</div>'
         )
-        self._append_message("error", error_summary)
-        
-        # UI state reset
+        self.txt_chat_log.append(error_html)
+
         self._set_agent_status("❌ Agent Failed", "#EF5350")
         self._cleanup_agent_worker()
 
@@ -18204,6 +19699,9 @@ class MainWindow(QMainWindow):
         self.btn_reject_agent.setEnabled(False)
         self.btn_kill_agent.setEnabled(False)
         self._set_agent_status("⚪ Agent Idle", "#9aa1b5")
+        if hasattr(self, 'lbl_agent_indicator'):
+            self.lbl_agent_indicator.setText("✅ Agent Idle")
+            self.lbl_agent_indicator.setStyleSheet("color: #66BB6A; font-weight: bold;")
         self._agent_worker = None
 
 
@@ -18365,6 +19863,38 @@ class OpenHandsWorker(QThread):
         return timer
 
     # Event handling remains largely the same; keep concise and robust
+
+    def _get_project_context(self) -> str:
+        """
+        Memory Index se project structure lao.
+        Agent ko terminal explore karne ki zaroorat nahi.
+        """
+        try:
+            from memory_index import MemoryIndex
+            memory = MemoryIndex("erp_memory.json")
+
+            if not memory.project_root_path:
+                return "(No project scanned yet)"
+
+            overview = memory.get_project_overview()
+            lines = [f"Project: {overview.get('project_root', 'Unknown')}"]
+            lines.append(f"Total files: {overview.get('total_files', 0)}")
+            lines.append("")
+
+            # Top 15 files ka structure dikhao
+            for module in overview.get("modules", [])[:15]:
+                file_info = f"  - {module.get('file', '?')}"
+                if module.get("classes"):
+                    file_info += f" (classes: {', '.join(module['classes'][:3])})"
+                if module.get("functions"):
+                    file_info += f" (functions: {', '.join(module['functions'][:5])})"
+                lines.append(file_info)
+
+            return "\n".join(lines)
+
+        except Exception:
+            return "(Project context unavailable)"
+
     def _on_agent_event(self, event: Event) -> None:
         try:
             summary = str(event)
@@ -18469,11 +19999,28 @@ class OpenHandsWorker(QThread):
                 web_search_script = os.path.join(tool_root, "tools", "web_search.py").replace("\\", "/")
                 repo_reader_script = os.path.join(tool_root, "tools", "repo_reader.py").replace("\\", "/")
 
+                # 🆕 Project context directly inject karo (terminal ki zaroorat nahi)
+                project_context = self._get_project_context()
+
                 tools_instruction = f"""
-AVAILABLE TOOL SCRIPTS:
-- Web Search: python "{web_search_script}" "your query"
-- Repo Reader: python "{repo_reader_script}" read <file>
-"""
+    ⚠️ CRITICAL RULES - WINDOWS ENVIRONMENT:
+    1. DO NOT use terminal commands. Use FileEditorTool DIRECTLY.
+    2. To read a file: Use FileEditorTool with command="view", path="<filepath>"
+    3. To create a file: Use FileEditorTool with command="create", path="<filepath>", file_text="<content>"
+    4. To edit a file: Use FileEditorTool with command="str_replace", path="<filepath>"
+    5. NEVER use: head, tail, cat, grep, find, ls, dir, &&, ||
+    6. If you need to see a file, use FileEditorTool view command.
+    7. Keep it simple: Read file → Edit file → Done. No exploration needed.
+
+    📁 PROJECT CONTEXT (already scanned - no need to explore):
+    {project_context}
+
+    📝 YOUR TASK:
+    - Read the relevant file using FileEditorTool
+    - Make the requested changes using FileEditorTool
+    - Do NOT run terminal commands unless absolutely necessary
+    - If terminal is needed, use PowerShell syntax (Get-ChildItem, Get-Content, Select-String)
+    """
 
                 self._conversation = Conversation(
                     agent=agent,

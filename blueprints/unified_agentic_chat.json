@@ -1,10 +1,9 @@
 {
   "blueprint_id": "bp_unified_agentic_chat_001",
   "title": "Unified Agentic Chat - Do Modes Se Ek Conversation",
-  "created_at": "2026-08-18",
-  "source_file": "unified_agentic_chat.json",
+  "created_at": "2026-08-17",
+  "loaded_at": null,
   "status": "in_progress",
-  "modules": [],
   "tasks": [
     {
       "id": "T01",
@@ -12,9 +11,9 @@
       "file": "ui/intent_router.py",
       "expected_function": "detect_intent(user_text, context) -> IntentResult",
       "module": "Phase 1: Smart Router",
-      "status": "done",
-      "completed_at": "2026-08-18T16:18:35.983373",
-      "notes": "Auto-synced: file exists"
+      "status": "pending",
+      "completed_at": null,
+      "notes": "Keyword + pattern based intent detection. Categories: QUESTION, TASK, COMMAND, AMBIGUOUS."
     },
     {
       "id": "T02",
@@ -22,9 +21,9 @@
       "file": "ui/main_window.py",
       "expected_function": "_on_send_query_clicked",
       "module": "Phase 1: Smart Router",
-      "status": "done",
-      "completed_at": "2026-08-18T16:18:35.995671",
-      "notes": "Auto-synced: file exists"
+      "status": "pending",
+      "completed_at": null,
+      "notes": "Replace direct QueryWorker call with router decision. TASK -> OpenHandsWorker, QUESTION -> QueryWorker."
     },
     {
       "id": "T03",
@@ -32,9 +31,9 @@
       "file": "ui/openhands_worker.py",
       "expected_function": "_on_agent_event",
       "module": "Phase 2: Unified Worker",
-      "status": "done",
-      "completed_at": "2026-08-18T16:18:35.852268",
-      "notes": "Auto-synced: file exists"
+      "status": "pending",
+      "completed_at": null,
+      "notes": "Agent events ko chat-friendly format mein emit karo. Sab kuch chat mein dikhe."
     },
     {
       "id": "T04",
@@ -122,16 +121,22 @@
       "file": "tests/test_unified_chat.py",
       "expected_function": "test_unified_flow",
       "module": "Phase 5: Polish",
-      "status": "done",
-      "completed_at": "2026-08-18T09:32:32.041829",
-      "notes": "Auto-synced: file exists"
+      "status": "pending",
+      "completed_at": null,
+      "notes": "Test: question->chat, task->agent, approval flow, error handling, kill command."
     }
   ],
   "progress": {
     "total_tasks": 12,
-    "done": 4,
-    "pending": 8,
-    "percentage": 33
+    "done": 0,
+    "pending": 12,
+    "percentage": 0
   },
-  "loaded_at": "2026-08-18T09:23:49.645943"
+  "phases": {
+    "Phase 1: Smart Router": ["T01", "T02"],
+    "Phase 2: Unified Worker": ["T03", "T04"],
+    "Phase 3: Inline Approval": ["T05", "T06"],
+    "Phase 4: UI Cleanup": ["T07", "T08", "T09"],
+    "Phase 5: Polish & Testing": ["T10", "T11", "T12"]
+  }
 }

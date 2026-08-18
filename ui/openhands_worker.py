@@ -118,6 +118,38 @@ class OpenHandsWorker(QThread):
         return timer
 
     # Event handling remains largely the same; keep concise and robust
+
+    def _get_project_context(self) -> str:
+        """
+        Memory Index se project structure lao.
+        Agent ko terminal explore karne ki zaroorat nahi.
+        """
+        try:
+            from memory_index import MemoryIndex
+            memory = MemoryIndex("erp_memory.json")
+
+            if not memory.project_root_path:
+                return "(No project scanned yet)"
+
+            overview = memory.get_project_overview()
+            lines = [f"Project: {overview.get('project_root', 'Unknown')}"]
+            lines.append(f"Total files: {overview.get('total_files', 0)}")
+            lines.append("")
+
+            # Top 15 files ka structure dikhao
+            for module in overview.get("modules", [])[:15]:
+                file_info = f"  - {module.get('file', '?')}"
+                if module.get("classes"):
+                    file_info += f" (classes: {', '.join(module['classes'][:3])})"
+                if module.get("functions"):
+                    file_info += f" (functions: {', '.join(module['functions'][:5])})"
+                lines.append(file_info)
+
+            return "\n".join(lines)
+
+        except Exception:
+            return "(Project context unavailable)"
+
     def _on_agent_event(self, event: Event) -> None:
         try:
             summary = str(event)
@@ -222,11 +254,28 @@ class OpenHandsWorker(QThread):
                 web_search_script = os.path.join(tool_root, "tools", "web_search.py").replace("\\", "/")
                 repo_reader_script = os.path.join(tool_root, "tools", "repo_reader.py").replace("\\", "/")
 
+                # 🆕 Project context directly inject karo (terminal ki zaroorat nahi)
+                project_context = self._get_project_context()
+
                 tools_instruction = f"""
-AVAILABLE TOOL SCRIPTS:
-- Web Search: python "{web_search_script}" "your query"
-- Repo Reader: python "{repo_reader_script}" read <file>
-"""
+    ⚠️ CRITICAL RULES - WINDOWS ENVIRONMENT:
+    1. DO NOT use terminal commands. Use FileEditorTool DIRECTLY.
+    2. To read a file: Use FileEditorTool with command="view", path="<filepath>"
+    3. To create a file: Use FileEditorTool with command="create", path="<filepath>", file_text="<content>"
+    4. To edit a file: Use FileEditorTool with command="str_replace", path="<filepath>"
+    5. NEVER use: head, tail, cat, grep, find, ls, dir, &&, ||
+    6. If you need to see a file, use FileEditorTool view command.
+    7. Keep it simple: Read file → Edit file → Done. No exploration needed.
+
+    📁 PROJECT CONTEXT (already scanned - no need to explore):
+    {project_context}
+
+    📝 YOUR TASK:
+    - Read the relevant file using FileEditorTool
+    - Make the requested changes using FileEditorTool
+    - Do NOT run terminal commands unless absolutely necessary
+    - If terminal is needed, use PowerShell syntax (Get-ChildItem, Get-Content, Select-String)
+    """
 
                 self._conversation = Conversation(
                     agent=agent,
